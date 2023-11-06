@@ -10,7 +10,7 @@ editor: visual
 ---
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
-source('../scripts/functions2.R')
+source('../scripts/functions.R')
 df = load_data('rpkg_20190129.csv')
 df0 = df-1
 

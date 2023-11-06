@@ -215,8 +215,8 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <p>where <span class="math inline">\(C_{\alpha,u} = 1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\)</span>.</p>
 <p>Since we wish to use this to construct a Metropolis-Hastings algorithm we again need some priors for the values of the parameters. The priors we use are listed below.</p>
 <p><span class="math display">\[
-\alpha\sim Ga(\gamma,\delta)\\
-\xi \sim N(0,s^2)\\
+\alpha\sim Ga(\gamma,\delta),\\
+\xi \sim N(0,s^2),\\
 \sigma_u \sim Ga(\phi,\psi)
 \]</span></p>
 <p>Which we can then use to construct the joint posterior:</p>
@@ -344,15 +344,6 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="CRAN_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>     alpha            shape            scale       
- Min.   :0.6372   Min.   :0.8407   Min.   : 4.408  
- 1st Qu.:0.6666   1st Qu.:1.3838   1st Qu.:32.088  
- Median :0.6770   Median :1.5757   Median :35.505  
- Mean   :0.6948   Mean   :1.6492   Mean   :33.672  
- 3rd Qu.:0.6866   3rd Qu.:1.8041   3rd Qu.:38.717  
- Max.   :2.9949   Max.   :3.9376   Max.   :48.124  </code></pre>
 </div>
 </div>
 </section>
