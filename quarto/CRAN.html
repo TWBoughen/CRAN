@@ -91,6 +91,14 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   </ul></li>
   </ul></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a>
+  <ul>
+  <li><a href="#implementation-of-zeta-function" id="toc-implementation-of-zeta-function" class="nav-link" data-scroll-target="#implementation-of-zeta-function">Implementation of zeta function</a>
+  <ul>
+  <li><a href="#defaults" id="toc-defaults" class="nav-link" data-scroll-target="#defaults">Defaults</a></li>
+  <li><a href="#increasing-the-value-of-aa" id="toc-increasing-the-value-of-aa" class="nav-link" data-scroll-target="#increasing-the-value-of-aa">Increasing the value of aa</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -363,6 +371,29 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 </div>
 </div>
 </section>
+</section>
+</section>
+</section>
+<section id="notes" class="level1">
+<h1>Notes</h1>
+<section id="implementation-of-zeta-function" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-of-zeta-function">Implementation of zeta function</h2>
+<p>Below is a plot demonstrating the difference in the values obtained from the two different implementations of the hurwitz zeta function.There appears to be a large difference, with the gsl library being more accurate, evidenced by the fact that we can increase the ‘aa’ variable in the function from VGAM and obtain values closer to those obtained from gsl.</p>
+<section id="defaults" class="level3">
+<h3 class="anchored" data-anchor-id="defaults">Defaults</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="increasing-the-value-of-aa" class="level3">
+<h3 class="anchored" data-anchor-id="increasing-the-value-of-aa">Increasing the value of aa</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 </section>
 </section>
