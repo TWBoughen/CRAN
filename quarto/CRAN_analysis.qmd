@@ -1,0 +1,20 @@
+---
+title: "CRAN2"
+format: 
+  html: 
+    toc: true
+    toc-depth: 5
+    toc-location: left
+editor: visual
+---
+
+```{r,message=FALSE, warning= FALSE,echo=FALSE}
+source('../scripts/functions.R')
+
+```
+
+```{r}
+load_depend_data()
+create_graph()
+
+```
