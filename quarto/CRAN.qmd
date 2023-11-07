@@ -107,6 +107,24 @@ f(x) =
 \end{cases}
 $$
 
+And the cumulative mass function is given by:
+
+$$
+F(x) = \begin{cases}
+\zeta(\alpha+1)^{-1}\sum_{k=1}^xk^{-(\alpha+1)}&,x\leq u\\
+\zeta(\alpha+1)^{-1}\sum_{k=1}^uk^{-(\alpha+1)} + \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\sum_{k=u+1}^x\left\{\left(1+\frac{\xi(k-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi k}{\sigma_u}\right)_+^{-1/\xi}\right\}&,x>u
+\end{cases}
+$$
+
+This can be simplified to:
+
+$$
+F(x) = \begin{cases}
+\zeta(\alpha+1)^{-1}\sum_{k=1}^xk^{-(\alpha+1)}&,x\leq u\\
+\zeta(\alpha+1)^{-1}\sum_{k=1}^uk^{-(\alpha+1)} + \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left\{1 - \left(1+\frac{\xi k}{\sigma_u}\right)_+^{-1/\xi}\right\}&,x>u
+\end{cases}
+$$
+
 Which makes the survival function of this model:
 
 $$
@@ -139,13 +157,42 @@ $$
 \sigma_u \sim Ga(\phi,\psi)
 $$
 
+Our joint prior distribution is defined as follows:
+
+```{=tex}
+\begin{align}
+\pi(\alpha,\xi,\sigma_u) &= \pi(\alpha)\pi(\xi)\pi(\sigma_u)\\
+\log\pi(\alpha,\xi\sigma_u) &= \log\pi(\alpha) +\log\pi(\xi) +\log\pi(\sigma_u)
+\end{align}
+```
+And we have that
+
+```{=tex}
+\begin{align}
+\log\pi(\alpha) &= \gamma\log\delta - \log\Gamma(\gamma) + (\gamma-1)\log\alpha -\delta\alpha\\
+\log\pi(\xi) &= -\log s -0.5\log 2\pi - \frac{\xi^2}{2s^2}\\
+\log\pi(\sigma_u) &= \phi\log\psi - \log\Gamma(\phi) + (\phi-1)\log\sigma_u - \psi\sigma_u
+\end{align}
+```
 Which we can then use to construct the joint posterior:
 
-\[WRITE UP POSTERIOR AND LOG POSTERIOR\]
+```{=tex}
+\begin{align}
+\pi(\alpha,\xi,\sigma_u|x) &\propto L(x)\pi(\alpha,\xi,\sigma_u)\\
+                            &=L(x)\pi(\alpha)\pi(\xi)\pi(\sigma_u)\\
+\log\pi(\alpha,\xi,\sigma_u|x) &= \log A + \ell(x) +  \log\pi(\alpha) +\log\pi(\xi) + \log\pi(\sigma_u)\\
+&= \log B - n\log\zeta(\alpha+1) - (\alpha + 1)\sum_{i:x_i\leq u}\log x_i + (N-n)\log C_{\alpha,u} + \sum_{i:x_i>u}\log[G(x_i-1) - G(x_i)]\\
 
+&\qquad + (\gamma-1)\log\alpha - \delta\alpha -\frac{\xi^2}{2s^2} + (\phi-1)\log\sigma_u - \psi\sigma_u 
+\end{align}
+```
 We can now use this to fit the model for various thresholds, the thresholds we will be using will be based on the quantiles of our data.
 
 ## Plots of fitted model
+
+```{r}
+n.iter=1e4
+```
 
 ### Depends data
 
@@ -153,28 +200,28 @@ We can now use this to fit the model for various thresholds, the thresholds we w
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$depends,0.95)
-mcmc.out=fast.zigpd.mcmc(1e4,df$depends,u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
 ```
 
 #### Quantile 0.97
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$depends,0.97)
-mcmc.out=fast.zigpd.mcmc(1e4,df$depends,u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
 ```
 
 #### Quantile 0.98
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$depends,0.98)
-mcmc.out=fast.zigpd.mcmc(1e4,df$depends,u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
 ```
 
 #### Quantile 0.99
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$depends,0.99)
-mcmc.out=fast.zigpd.mcmc(1e4,df$depends,u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
 ```
 
 ### Imports data
@@ -183,28 +230,28 @@ mcmc.out=fast.zigpd.mcmc(1e4,df$depends,u)
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$imports,0.95)
-mcmc.out=fast.zigpd.mcmc(1e4,df$imports,u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
 ```
 
 #### Quantile 0.97
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$imports,0.97)
-mcmc.out=fast.zigpd.mcmc(1e4,df$imports,u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
 ```
 
 #### Quantile 0.98
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$imports,0.98)
-mcmc.out=fast.zigpd.mcmc(1e4,df$imports,u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
 ```
 
 #### Quantile 0.99
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$imports,0.99)
-mcmc.out=fast.zigpd.mcmc(1e4,df$imports,u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
 ```
 
 ### Depends Without Zeros
@@ -213,28 +260,28 @@ mcmc.out=fast.zigpd.mcmc(1e4,df$imports,u)
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$depends[df0$depends>0],0.95)
-mcmc.out=fast.zigpd.mcmc(1e4,df0$depends[df0$depends>0],u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df0$depends[df0$depends>0],u)
 ```
 
 #### Quantile 0.97
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$depends[df0$depends>0],0.97)
-mcmc.out=fast.zigpd.mcmc(1e4,df0$depends[df0$depends>0],u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df0$depends[df0$depends>0],u)
 ```
 
 #### Quantile 0.98
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$depends[df0$depends>0],0.98)
-mcmc.out=fast.zigpd.mcmc(1e4,df0$depends[df0$depends>0],u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df0$depends[df0$depends>0],u)
 ```
 
 #### Quantile 0.99
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$depends[df0$depends>0],0.99)
-mcmc.out=fast.zigpd.mcmc(1e4,df0$depends[df0$depends>0],u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df0$depends[df0$depends>0],u)
 ```
 
 ### Imports Without Zeros
@@ -243,14 +290,14 @@ mcmc.out=fast.zigpd.mcmc(1e4,df0$depends[df0$depends>0],u)
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$imports[df0$imports>0],0.95)
-mcmc.out=fast.zigpd.mcmc(1e4,df0$imports[df0$imports>0],u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 ```
 
 #### Quantile 0.97
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$imports[df0$imports>0],0.97)
-mcmc.out=fast.zigpd.mcmc(1e4,df0$imports[df0$imports>0],u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 
 ```
 
@@ -258,14 +305,14 @@ mcmc.out=fast.zigpd.mcmc(1e4,df0$imports[df0$imports>0],u)
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$imports[df0$imports>0],0.98)
-mcmc.out=fast.zigpd.mcmc(1e4,df0$imports[df0$imports>0],u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 ```
 
 #### Quantile 0.99
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$imports[df0$imports>0],0.99)
-mcmc.out=fast.zigpd.mcmc(1e4,df0$imports[df0$imports>0],u)
+mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 ```
 
 # Notes

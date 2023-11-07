@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -204,6 +238,20 @@ f(x) =
 \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left\{\left(1+\frac{\xi(x-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x}{\sigma_u}\right)_+^{-1/\xi}\right\}&amp;,x&gt;u
 \end{cases}
 \]</span></p>
+<p>And the cumulative mass function is given by:</p>
+<p><span class="math display">\[
+F(x) = \begin{cases}
+\zeta(\alpha+1)^{-1}\sum_{k=1}^xk^{-(\alpha+1)}&amp;,x\leq u\\
+\zeta(\alpha+1)^{-1}\sum_{k=1}^uk^{-(\alpha+1)} + \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\sum_{k=u+1}^x\left\{\left(1+\frac{\xi(k-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi k}{\sigma_u}\right)_+^{-1/\xi}\right\}&amp;,x&gt;u
+\end{cases}
+\]</span></p>
+<p>This can be simplified to:</p>
+<p><span class="math display">\[
+F(x) = \begin{cases}
+\zeta(\alpha+1)^{-1}\sum_{k=1}^xk^{-(\alpha+1)}&amp;,x\leq u\\
+\zeta(\alpha+1)^{-1}\sum_{k=1}^uk^{-(\alpha+1)} + \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left\{1 - \left(1+\frac{\xi k}{\sigma_u}\right)_+^{-1/\xi}\right\}&amp;,x&gt;u
+\end{cases}
+\]</span></p>
 <p>Which makes the survival function of this model:</p>
 <p><span class="math display">\[
 S(x) =
@@ -227,18 +275,39 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 \xi \sim N(0,s^2),\\
 \sigma_u \sim Ga(\phi,\psi)
 \]</span></p>
+<p>Our joint prior distribution is defined as follows:</p>
+<span class="math display">\[\begin{align}
+\pi(\alpha,\xi,\sigma_u) &amp;= \pi(\alpha)\pi(\xi)\pi(\sigma_u)\\
+\log\pi(\alpha,\xi\sigma_u) &amp;= \log\pi(\alpha) +\log\pi(\xi) +\log\pi(\sigma_u)
+\end{align}\]</span>
+<p>And we have that</p>
+<span class="math display">\[\begin{align}
+\log\pi(\alpha) &amp;= \gamma\log\delta - \log\Gamma(\gamma) + (\gamma-1)\log\alpha -\delta\alpha\\
+\log\pi(\xi) &amp;= -\log s -0.5\log 2\pi - \frac{\xi^2}{2s^2}\\
+\log\pi(\sigma_u) &amp;= \phi\log\psi - \log\Gamma(\phi) + (\phi-1)\log\sigma_u - \psi\sigma_u
+\end{align}\]</span>
 <p>Which we can then use to construct the joint posterior:</p>
-<p>[WRITE UP POSTERIOR AND LOG POSTERIOR]</p>
+<span class="math display">\[\begin{align}
+\pi(\alpha,\xi,\sigma_u|x) &amp;\propto L(x)\pi(\alpha,\xi,\sigma_u)\\
+                            &amp;=L(x)\pi(\alpha)\pi(\xi)\pi(\sigma_u)\\
+\log\pi(\alpha,\xi,\sigma_u|x) &amp;= \log A + \ell(x) +  \log\pi(\alpha) +\log\pi(\xi) + \log\pi(\sigma_u)\\
+&amp;= \log B - n\log\zeta(\alpha+1) - (\alpha + 1)\sum_{i:x_i\leq u}\log x_i + (N-n)\log C_{\alpha,u} + \sum_{i:x_i&gt;u}\log[G(x_i-1) - G(x_i)]\\
+
+&amp;\qquad + (\gamma-1)\log\alpha - \delta\alpha -\frac{\xi^2}{2s^2} + (\phi-1)\log\sigma_u - \psi\sigma_u
+\end{align}\]</span>
 <p>We can now use this to fit the model for various thresholds, the thresholds we will be using will be based on the quantiles of our data.</p>
 <section id="plots-of-fitted-model" class="level2">
 <h2 class="anchored" data-anchor-id="plots-of-fitted-model">Plots of fitted model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>n.iter<span class="ot">=</span><span class="fl">1e4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <section id="depends-data-1" class="level3">
 <h3 class="anchored" data-anchor-id="depends-data-1">Depends data</h3>
 <section id="quantile-0.95" class="level4">
 <h4 class="anchored" data-anchor-id="quantile-0.95">Quantile 0.95</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -246,7 +315,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.97">Quantile 0.97</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -254,7 +323,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.98">Quantile 0.98</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -262,7 +331,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.99">Quantile 0.99</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -273,7 +342,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.95-1">Quantile 0.95</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -281,7 +350,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.97-1">Quantile 0.97</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -289,7 +358,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.98-1">Quantile 0.98</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -297,7 +366,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.99-1">Quantile 0.99</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -308,7 +377,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.95-2">Quantile 0.95</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -316,7 +385,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.97-2">Quantile 0.97</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -324,7 +393,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.98-2">Quantile 0.98</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -332,7 +401,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.99-2">Quantile 0.99</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -343,7 +412,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.95-3">Quantile 0.95</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -351,7 +420,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.97-3">Quantile 0.97</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -359,7 +428,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.98-3">Quantile 0.98</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -367,7 +436,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h4 class="anchored" data-anchor-id="quantile-0.99-3">Quantile 0.99</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -383,7 +452,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h3 class="anchored" data-anchor-id="defaults">Defaults</h3>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -391,7 +460,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h3 class="anchored" data-anchor-id="increasing-the-value-of-aa">Increasing the value of aa</h3>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
