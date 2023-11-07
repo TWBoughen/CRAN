@@ -191,7 +191,7 @@ We can now use this to fit the model for various thresholds, the thresholds we w
 ## Plots of fitted model
 
 ```{r}
-n.iter=1e4
+n.iter=1e5
 ```
 
 ### Depends data
