@@ -16,6 +16,7 @@ df0 = df-1
 
 ```
 
+
 # Zeta Model
 
 We first consider modelling our data using the zeta model which is a power law model that has p.m.f:
@@ -72,28 +73,36 @@ With this posterior we can fit the model to both sets of our data.
 
 ### Depends Data
 
+
 ```{r Zeta Depends,echo=FALSE,message=FALSE,warning=FALSE}
 zeta.depends.out = zeta.mcmc(1e4,df$depends,2,c(4,4))
 ```
 
+
 ### Imports Data
+
 
 ```{r Zeta Imports ,echo=FALSE,message=FALSE,warning=FALSE}
 zeta.imports.out = zeta.mcmc(1e4,df$imports,1.5,c(4,4))
 ```
 
+
 ### Depends Data (without zeros)
+
 
 ```{r Zeta Depends no zeros ,echo=FALSE,message=FALSE,warning=FALSE}
 zeta.depends0.out = zeta.mcmc(1e4,df0$depends[df0$depends>0],1,c(4,4))
 
 ```
 
+
 ### Imports Data (without zeros)
+
 
 ```{r  Zeta Imports no zeros ,echo=FALSE,message=FALSE,warning=FALSE}
 zeta.imports0.out = zeta.mcmc(1e4,df0$imports[df0$imports>0],0.6,c(4,4))
 ```
+
 
 # Zeta-IGPD Model
 
@@ -159,13 +168,16 @@ $$
 
 Our joint prior distribution is defined as follows:
 
+
 ```{=tex}
 \begin{align}
 \pi(\alpha,\xi,\sigma_u) &= \pi(\alpha)\pi(\xi)\pi(\sigma_u)\\
 \log\pi(\alpha,\xi\sigma_u) &= \log\pi(\alpha) +\log\pi(\xi) +\log\pi(\sigma_u)
 \end{align}
 ```
+
 And we have that
+
 
 ```{=tex}
 \begin{align}
@@ -174,7 +186,9 @@ And we have that
 \log\pi(\sigma_u) &= \phi\log\psi - \log\Gamma(\phi) + (\phi-1)\log\sigma_u - \psi\sigma_u
 \end{align}
 ```
+
 Which we can then use to construct the joint posterior:
+
 
 ```{=tex}
 \begin{align}
@@ -186,6 +200,7 @@ Which we can then use to construct the joint posterior:
 &\qquad + (\gamma-1)\log\alpha - \delta\alpha -\frac{\xi^2}{2s^2} + (\phi-1)\log\sigma_u - \psi\sigma_u 
 \end{align}
 ```
+
 We can now use this to fit the model for various thresholds, the thresholds we will be using will be based on the quantiles of our data.
 
 ## Method for fitting
@@ -232,110 +247,139 @@ Suppose we have the initial state $\theta^{(0)} = (\alpha^{(0)},\xi^{(0)},\sigma
 
 ## Plots of fitted model
 
+
 ```{r}
 n.iter=4e4
 ```
 
+
 ### Depends data
 
 #### Quantile 0.95
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$depends,0.95)
 mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
 ```
 
+
 #### Quantile 0.96
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$depends,0.96)
 mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
 ```
 
+
 #### Quantile 0.97
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$depends,0.97)
 mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
 ```
 
+
 #### Quantile 0.98
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$depends,0.98)
 mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
 ```
 
+
 ### Imports data
 
 #### Quantile 0.95
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$imports,0.95)
 mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
 ```
 
+
 #### Quantile 0.96
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$imports,0.96)
 mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
 ```
 
+
 #### Quantile 0.97
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$imports,0.97)
 mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
 ```
 
+
 #### Quantile 0.98
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df$imports,0.98)
 mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
 ```
 
+
 ### Depends Without Zeros
 
 #### Quantile 0.95
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$depends[df0$depends>0],0.95)
 mcmc.out=fast.zigpd.mcmc(n.iter,df0$depends[df0$depends>0],u)
 ```
 
+
 #### Quantile 0.96
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$depends[df0$depends>0],0.96)
 mcmc.out=fast.zigpd.mcmc(n.iter,df0$depends[df0$depends>0],u)
 ```
 
+
 #### Quantile 0.97
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$depends[df0$depends>0],0.97)
 mcmc.out=fast.zigpd.mcmc(n.iter,df0$depends[df0$depends>0],u)
 ```
 
+
 #### Quantile 0.98
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$depends[df0$depends>0],0.98)
 mcmc.out=fast.zigpd.mcmc(n.iter,df0$depends[df0$depends>0],u)
 ```
 
+
 ### Imports Without Zeros
 
 #### Quantile 0.95
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$imports[df0$imports>0],0.95)
 mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 ```
 
+
 #### Quantile 0.96
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$imports[df0$imports>0],0.96)
@@ -343,19 +387,24 @@ mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 
 ```
 
+
 #### Quantile 0.97
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$imports[df0$imports>0],0.97)
 mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 ```
 
+
 #### Quantile 0.98
+
 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 u = quantile(df0$imports[df0$imports>0],0.98)
 mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 ```
+
 
 # Notes
 
@@ -364,6 +413,7 @@ mcmc.out=fast.zigpd.mcmc(n.iter,df0$imports[df0$imports>0],u)
 Below is a plot demonstrating the difference in the values obtained from the two different implementations of the hurwitz zeta function.There appears to be a large difference, with the gsl library being more accurate, evidenced by the fact that we can increase the 'aa' variable in the function from VGAM and obtain values closer to those obtained from gsl.
 
 ### Defaults
+
 
 ```{r, echo=FALSE}
 AA = 24
@@ -417,7 +467,9 @@ lines(k,zeta_mod(s,shift=k), lty=2)
 
 ```
 
+
 ### Increasing the value of aa
+
 
 ```{r,echo=FALSE}
 aa = 3e2
@@ -425,3 +477,4 @@ plot(k,gsl::hzeta(s,q=k), log='xy', type='l',lty=1, col=1,ylab=TeX('\\zeta(s,k)'
 lines(k,zeta_mod(s,shift=k,aa=aa), lty=2)
 
 ```
+

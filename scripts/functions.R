@@ -279,6 +279,10 @@ plot.zigpd.mcmc = function(mcmc.out,dat,threshold){
   lines(pzigpd(k,par.means[1], threshold,par.means[2], par.means[3], lower.tail=F), col='red')
   lines(pzigpd(k,par.lower[1], threshold,par.upper[2], par.upper[3], lower.tail=F), col='blue')
   lines(pzigpd(k,par.upper[1], threshold,par.lower[2], par.lower[3], lower.tail=F), col='blue')
+  legend('bottomleft',legend = c(paste('Threshold = ', threshold),
+                                 paste('Alpha: ', round(par.means[1],2)),
+                                 paste('Shape: ', round(par.means[2],2)),
+                                 paste('Scale: ', round(par.means[3],2))))
   
   par(mfrow=c(1,1))
 }
