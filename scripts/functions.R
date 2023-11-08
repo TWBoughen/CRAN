@@ -1,3 +1,5 @@
+#libraries
+{
 require(igraph)
 require(evd)
 require(ismev)
@@ -5,7 +7,9 @@ require(extRemes)
 require(VGAM)
 require(rjags)
 require(gsl)
-
+}
+#functions
+{
 ##data loading functions
 {
 rbind_ind = function(df1, df2){
@@ -70,7 +74,6 @@ epdf2 = function(x){
 dzeta  = Vectorize(function(x,alpha){
   return(x^-(alpha+1) / gsl::zeta(alpha+1))
 },vectorize.args = 'x')
-
 pzeta = Vectorize(function(x,alpha,lower.tail=T){
   if(lower.tail){
     return(sum((1:x)^-(alpha+1))/gsl::zeta(alpha+1))
@@ -78,9 +81,6 @@ pzeta = Vectorize(function(x,alpha,lower.tail=T){
     return(1-sum((1:x)^-(alpha+1))/gsl::zeta(alpha+1))
   }
 },vectorize.args = 'x')
-
-
-
 lzeta = function(X,alpha,log=T){
   if(log){
     return(-length(X)*log(gsl::zeta(alpha+1)) - (alpha+1)*sum(log(X)))
@@ -88,15 +88,12 @@ lzeta = function(X,alpha,log=T){
     return(exp(-length(X)*log(gsl::zeta(alpha+1)) - (alpha+1)*sum(log(X))))
   }
 }
-
 alpha.prior = function(alpha,pars){
   return(dgamma(alpha,shape=pars[1],rate=pars[2],log=T))
 }
-
 zeta.posterior = function(X,alpha,alpha.pars){
   return(lzeta(X,alpha)+alpha.prior(alpha,alpha.pars))
 }
-
 zeta.mcmc = function(n.iter,data,alpha.init,alpha.pars,prop.var.init=0.01,H=200,show=T){
   results = numeric(n.iter+1)
   results[1] = alpha.init
@@ -156,10 +153,6 @@ plot.zeta.mcmc = function(mcmc.out,dat){
   
   par(mfrow=c(1,1))
 }
-
-
-
-
 }
 ##zeta-igpd model functions
 {
@@ -174,7 +167,6 @@ dzigpd = Vectorize(function(x,alpha,u,shape,scale){
     return(pzeta(u,alpha,lower.tail=F)*(pgpd(x,u,scale=scale,shape=shape)-pgpd(x-1,u,scale=scale,shape=shape)))
   }
 },vectorize.args = 'x')
-
 pzigpd = Vectorize(function(x,alpha,u,shape,scale,lower.tail=T){
   out=NA
   if(x<=u){
@@ -189,7 +181,6 @@ pzigpd = Vectorize(function(x,alpha,u,shape,scale,lower.tail=T){
     return(out)
   }
 },vectorize.args = 'x')
-
 lzigpd = function(X,alpha,u,shape,scale){
   n = length(X[X<=u])
   N = length(X)
@@ -203,14 +194,6 @@ lzigpd = function(X,alpha,u,shape,scale){
   
   return(A+B+CC+DD)
 }
-
-
-
-
-
-
-
-
 shape.prior = function(shape,pars){
   return(dnorm(shape,mean=0,sd=pars[1],log=T))
 }
@@ -223,7 +206,6 @@ zigpd.prior = function(alpha,shape,scale,alpha.pars,shape.pars,scale.pars){
 zigpd.posterior = function(X,alpha,u,shape,scale,alpha.pars,shape.pars,scale.pars){
   return(lzigpd(X,alpha,u,shape,scale) + zigpd.prior(alpha,shape,scale,alpha.pars,shape.pars,scale.pars))
 }
-
 zigpd.mcmc = function(n.iter,data,u,init,pri.pars,prop.cov = diag(c(0.01,0.01,0.01)),H=200, show=T){
   states = data.frame(alpha=numeric(n.iter+1),shape=numeric(n.iter+1),scale=numeric(n.iter+1))
   states[1,] = init
@@ -277,9 +259,9 @@ plot.zigpd.mcmc = function(mcmc.out,dat,threshold){
   L = layout(layout.mat)
   par(mar=c(0,4,0,0))
   
-  plot(mcmc.out[,1], type='l',xaxt = 'n',xlab='',ylab='alpha')
-  plot(mcmc.out[,2], type='l',xaxt = 'n',xlab='',ylab='shape')
-  plot(mcmc.out[,3], type='l',ylab='scale')
+  plot(mcmc.out[-(1:(0.2*nrow(mcmc.out))),1], type='l',xaxt = 'n',xlab='',ylab='alpha')
+  plot(mcmc.out[-(1:(0.2*nrow(mcmc.out))),2], type='l',xaxt = 'n',xlab='',ylab='shape')
+  plot(mcmc.out[-(1:(0.2*nrow(mcmc.out))),3], type='l',ylab='scale')
   
   
   conf.size = 0.95
@@ -338,8 +320,6 @@ zzigpd.prior = function(p,alpha,shape,scale,p.pars,alpha.pars,shape.pars,scale.p
 zzigpd.posterior = function(X,p,alpha,u,shape,scale,p.pars,alpha.pars,shape.pars,scale.pars){
   return(lzzigpd(X,p,alpha,u,shape,scale) + zzigpd.prior(p,alpha,shape,scale,p.pars,alpha.pars,shape.pars,scale.pars))
 }
-
-
 zzigpd.mcmc = function(n.iter,data,u,init,pri.pars,prop.cov = diag(c(0.000001,0.001,0.0001,0.001)),H=200){
   states = data.frame(p=numeric(n.iter+1),alpha=numeric(n.iter+1),shape=numeric(n.iter+1),scale=numeric(n.iter+1))
   states[1,] = init
@@ -386,12 +366,8 @@ zzigpd.mcmc = function(n.iter,data,u,init,pri.pars,prop.cov = diag(c(0.000001,0.
   colnames(acc.states) = c('p','alpha','shape','scale')
   return(list(results=acc.states,vars = cov.ls))
 }
-
 }
-
-
-# -------------------------------------------------------------------------
-
+}
 
 
 

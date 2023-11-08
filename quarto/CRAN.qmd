@@ -9,7 +9,7 @@ format:
 editor: visual
 ---
 
-```{r, echo=FALSE,warning=FALSE,message=FALSE}
+```{r Loading Data, echo=FALSE,warning=FALSE,message=FALSE}
 source('../scripts/functions.R')
 df = load_data('rpkg_20190129.csv')
 df0 = df-1
@@ -72,26 +72,26 @@ With this posterior we can fit the model to both sets of our data.
 
 ### Depends Data
 
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
+```{r Zeta Depends,echo=FALSE,message=FALSE,warning=FALSE}
 zeta.depends.out = zeta.mcmc(1e4,df$depends,2,c(4,4))
 ```
 
 ### Imports Data
 
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
+```{r Zeta Imports ,echo=FALSE,message=FALSE,warning=FALSE}
 zeta.imports.out = zeta.mcmc(1e4,df$imports,1.5,c(4,4))
 ```
 
 ### Depends Data (without zeros)
 
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
+```{r Zeta Depends no zeros ,echo=FALSE,message=FALSE,warning=FALSE}
 zeta.depends0.out = zeta.mcmc(1e4,df0$depends[df0$depends>0],1,c(4,4))
 
 ```
 
 ### Imports Data (without zeros)
 
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
+```{r  Zeta Imports no zeros ,echo=FALSE,message=FALSE,warning=FALSE}
 zeta.imports0.out = zeta.mcmc(1e4,df0$imports[df0$imports>0],0.6,c(4,4))
 ```
 
@@ -188,10 +188,52 @@ Which we can then use to construct the joint posterior:
 ```
 We can now use this to fit the model for various thresholds, the thresholds we will be using will be based on the quantiles of our data.
 
+## Method for fitting
+
+In order to fit this model we will be using a Metropolis-Hastings algorithm with an adaptive proposal distribution, the method is fully described below:
+
+Suppose we have the initial state $\theta^{(0)} = (\alpha^{(0)},\xi^{(0)},\sigma_u^{(0)})$ and an initial proposal covariance matrix $\Sigma^{(0)}$. Let $\Omega$ be the ordered set of accepted states that is initially empty. Starting with $t=1$.
+
+1.  
+
+    -   If $|\Omega|<H$ then:
+
+        -   Set $\Sigma^{(t)} = \Sigma^{(0)}$
+
+    -   Otherwise:
+
+        -   Set $\Sigma^{(t)} =\frac{2.38^2}{3}R_m$ , where $R_m$ is the empirical covariance matrix of the last $H$ accepted states.
+
+2.  Propose a new state $\theta^* \sim N(\theta^{(t-1)},\Sigma^{(t)})$
+
+3.  
+
+    -   If $\alpha^*<0$ or $\sigma_u^*<0$ then:
+
+        -   Reject: set $\theta^{(t)} = \theta^{(t-1)}$
+
+        -   Set $t=t+1$ and go to 1.
+
+4.  Calculate $\mathcal{A} = \min(0,\log\pi(\theta^*|x) - \log\pi(\theta^{(t-1)}|x))$
+
+5.  Draw $z\sim U(0,1)$
+
+    -   If $\log z <\mathcal{A}$ then:
+
+        -   Accept: set $\theta^{(t)} = \theta^*$
+
+        -   Add $\theta^{(t)}$ to the end of $\Omega$
+
+    -   Otherwise
+
+        -   Reject: set $\theta^{(t)} = \theta^{(t-1)}$
+
+6.  Set $t=t+1$ and go to 1.
+
 ## Plots of fitted model
 
 ```{r}
-n.iter=1e5
+n.iter=4e4
 ```
 
 ### Depends data
