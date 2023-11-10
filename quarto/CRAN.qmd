@@ -81,20 +81,20 @@ zeta.depends.out = zeta.mcmc(1e4,df$depends,2,c(4,4))
 ### Imports Data
 
 ```{r Zeta Imports ,echo=FALSE,message=FALSE,warning=FALSE}
-zeta.imports.out = zeta.mcmc(1e4,df$imports,1.5,c(4,4))
+zeta.imports.out = zeta.mcmc(1e4,df$imports,2,c(4,4))
 ```
 
 ### Depends Data (without zeros)
 
 ```{r Zeta Depends no zeros ,echo=FALSE,message=FALSE,warning=FALSE}
-zeta.depends0.out = zeta.mcmc(1e4,df0$depends[df0$depends>0],1,c(4,4))
+zeta.depends0.out = zeta.mcmc(1e4,df0$depends[df0$depends>0],2,c(4,4))
 
 ```
 
 ### Imports Data (without zeros)
 
 ```{r  Zeta Imports no zeros ,echo=FALSE,message=FALSE,warning=FALSE}
-zeta.imports0.out = zeta.mcmc(1e4,df0$imports[df0$imports>0],0.6,c(4,4))
+zeta.imports0.out = zeta.mcmc(1e4,df0$imports[df0$imports>0],2,c(4,4))
 ```
 
 # Zeta-IGPD Model
@@ -235,67 +235,7 @@ Suppose we have the initial state $\theta^{(0)} = (\alpha^{(0)},\xi^{(0)},\sigma
 ## Plots of fitted model
 
 ```{r}
-n.iter=4e4
-```
-
-### Depends data
-
-#### Quantile 0.95
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-u = quantile(df$depends,0.95)
-mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
-```
-
-#### Quantile 0.96
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-u = quantile(df$depends,0.96)
-mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
-```
-
-#### Quantile 0.97
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-u = quantile(df$depends,0.97)
-mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
-```
-
-#### Quantile 0.98
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-u = quantile(df$depends,0.98)
-mcmc.out=fast.zigpd.mcmc(n.iter,df$depends,u)
-```
-
-### Imports data
-
-#### Quantile 0.95
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-u = quantile(df$imports,0.95)
-mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
-```
-
-#### Quantile 0.96
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-u = quantile(df$imports,0.96)
-mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
-```
-
-#### Quantile 0.97
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-u = quantile(df$imports,0.97)
-mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
-```
-
-#### Quantile 0.98
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-u = quantile(df$imports,0.98)
-mcmc.out=fast.zigpd.mcmc(n.iter,df$imports,u)
+n.iter=1e4
 ```
 
 ### Depends Without Zeros
