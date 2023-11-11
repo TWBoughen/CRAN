@@ -81,17 +81,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#zeta-model" id="toc-zeta-model" class="nav-link active" data-scroll-target="#zeta-model">Zeta Model</a>
+  <li><a href="#power-law-model" id="toc-power-law-model" class="nav-link active" data-scroll-target="#power-law-model">Power Law Model</a>
   <ul>
-  <li><a href="#plots-of-zeta-model-fit" id="toc-plots-of-zeta-model-fit" class="nav-link" data-scroll-target="#plots-of-zeta-model-fit">Plots of Zeta Model Fit</a>
+  <li><a href="#plots-of-power-law-model-fit" id="toc-plots-of-power-law-model-fit" class="nav-link" data-scroll-target="#plots-of-power-law-model-fit">Plots of Power Law Model Fit</a>
   <ul>
   <li><a href="#depends-data" id="toc-depends-data" class="nav-link" data-scroll-target="#depends-data">Depends Data</a></li>
   <li><a href="#imports-data" id="toc-imports-data" class="nav-link" data-scroll-target="#imports-data">Imports Data</a></li>
-  <li><a href="#depends-data-without-zeros" id="toc-depends-data-without-zeros" class="nav-link" data-scroll-target="#depends-data-without-zeros">Depends Data (without zeros)</a></li>
-  <li><a href="#imports-data-without-zeros" id="toc-imports-data-without-zeros" class="nav-link" data-scroll-target="#imports-data-without-zeros">Imports Data (without zeros)</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#zeta-igpd-model" id="toc-zeta-igpd-model" class="nav-link" data-scroll-target="#zeta-igpd-model">Zeta-IGPD Model</a>
+  <li><a href="#power-law-igpd-model" id="toc-power-law-igpd-model" class="nav-link" data-scroll-target="#power-law-igpd-model">Power Law-IGPD Model</a>
   <ul>
   <li><a href="#method-for-fitting" id="toc-method-for-fitting" class="nav-link" data-scroll-target="#method-for-fitting">Method for fitting</a></li>
   <li><a href="#plots-of-fitted-model" id="toc-plots-of-fitted-model" class="nav-link" data-scroll-target="#plots-of-fitted-model">Plots of fitted model</a>
@@ -109,6 +107,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#quantile-0.96-1" id="toc-quantile-0.96-1" class="nav-link" data-scroll-target="#quantile-0.96-1">Quantile 0.96</a></li>
   <li><a href="#quantile-0.97-1" id="toc-quantile-0.97-1" class="nav-link" data-scroll-target="#quantile-0.97-1">Quantile 0.97</a></li>
   <li><a href="#quantile-0.98-1" id="toc-quantile-0.98-1" class="nav-link" data-scroll-target="#quantile-0.98-1">Quantile 0.98</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#power-law-mixture" id="toc-power-law-mixture" class="nav-link" data-scroll-target="#power-law-mixture">Power Law Mixture</a>
+  <ul>
+  <li><a href="#plots-of-fitted-model-1" id="toc-plots-of-fitted-model-1" class="nav-link" data-scroll-target="#plots-of-fitted-model-1">Plots of fitted model</a>
+  <ul>
+  <li><a href="#depends-data-1" id="toc-depends-data-1" class="nav-link" data-scroll-target="#depends-data-1">Depends Data</a>
+  <ul class="collapse">
+  <li><a href="#quantile-0.95-2" id="toc-quantile-0.95-2" class="nav-link" data-scroll-target="#quantile-0.95-2">Quantile 0.95</a></li>
+  <li><a href="#quantile-0.96-2" id="toc-quantile-0.96-2" class="nav-link" data-scroll-target="#quantile-0.96-2">Quantile 0.96</a></li>
+  <li><a href="#quantile-0.97-2" id="toc-quantile-0.97-2" class="nav-link" data-scroll-target="#quantile-0.97-2">Quantile 0.97</a></li>
+  <li><a href="#quantile-0.98-2" id="toc-quantile-0.98-2" class="nav-link" data-scroll-target="#quantile-0.98-2">Quantile 0.98</a></li>
+  </ul></li>
+  <li><a href="#imports-data-1" id="toc-imports-data-1" class="nav-link" data-scroll-target="#imports-data-1">Imports Data</a>
+  <ul class="collapse">
+  <li><a href="#quantile-0.95-3" id="toc-quantile-0.95-3" class="nav-link" data-scroll-target="#quantile-0.95-3">Quantile 0.95</a></li>
+  <li><a href="#quantile-0.96-3" id="toc-quantile-0.96-3" class="nav-link" data-scroll-target="#quantile-0.96-3">Quantile 0.96</a></li>
+  <li><a href="#quantile-0.97-3" id="toc-quantile-0.97-3" class="nav-link" data-scroll-target="#quantile-0.97-3">Quantile 0.97</a></li>
+  <li><a href="#quantile-0.98-3" id="toc-quantile-0.98-3" class="nav-link" data-scroll-target="#quantile-0.98-3">Quantile 0.98</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -144,9 +162,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="zeta-model" class="level1">
-<h1>Zeta Model</h1>
-<p>We first consider modelling our data using the zeta model which is a power law model that has p.m.f:</p>
+<section id="power-law-model" class="level1">
+<h1>Power Law Model</h1>
+<p>We first consider modelling our data using the zeta distribution, which has probability mass function (p.m.f)</p>
 <p><span class="math display">\[
 f(x) = \zeta(\alpha+1)^{-1}x^{-(\alpha+1)}, \qquad x=1,2,3,\ldots
 \]</span></p>
@@ -154,17 +172,18 @@ f(x) = \zeta(\alpha+1)^{-1}x^{-(\alpha+1)}, \qquad x=1,2,3,\ldots
 <p><span class="math display">\[
 S(x) = 1-\zeta(\alpha+1)^{-1}\sum_{k=1}^x k^{-(\alpha+1)}, \qquad x=1,2,3,\ldots
 \]</span></p>
-<p>If we have a vector of data <span class="math inline">\(x = (x_1,x_2,\ldots,x_N)^T\)</span> , then the likelihood function and log-likelihood functions are:</p>
+<p>Where <span class="math inline">\(\zeta(s) = \sum_{k=1}^\infty k^{-s}\)</span> is the Riemann Zeta function and <span class="math inline">\(\alpha&gt;0\)</span> .</p>
+<p>If we have a vector of data <span class="math inline">\(\boldsymbol{x} = (x_1,x_2,\ldots,x_N)^T\)</span> , then the likelihood function and log-likelihood functions are:</p>
 <p><span class="math display">\[
-L(x) = \zeta(\alpha+1)^{-N}\prod_{i=1}^N x_i^{-(\alpha+1)}
+L(\boldsymbol{x}) = \zeta(\alpha+1)^{-N}\prod_{i=1}^N x_i^{-(\alpha+1)}
 \]</span></p>
 <p>and,</p>
 <p><span class="math display">\[
-\ell(x) = -N\log\zeta(\alpha+1) - (\alpha+1)\sum_{i=1}^N\log x_i
+\ell(\boldsymbol{x}) = -N\log\zeta(\alpha+1) - (\alpha+1)\sum_{i=1}^N\log x_i
 \]</span></p>
-<p>We now aim to fit this model using a Metropolis-Hastings algorithm, which means we need to put a prior on to the value of <span class="math inline">\(\alpha\)</span>. Since its value is restricted to being positive we choose to use a Gamma prior, that is:</p>
+<p>We now aim to fit this model using a bayesian approach, which means we need to decide on a prior for <span class="math inline">\(\alpha\)</span>. Since its value is restricted to being positive we choose to use a Gamma prior, that is:</p>
 <p><span class="math display">\[
-\alpha \sim Ga(\gamma,\delta)
+\alpha \sim Ga(\gamma,\delta), \qquad \gamma,\delta &gt; 0
 \]</span></p>
 <p>with the prior density function being:</p>
 <p><span class="math display">\[
@@ -172,41 +191,27 @@ L(x) = \zeta(\alpha+1)^{-N}\prod_{i=1}^N x_i^{-(\alpha+1)}
 \]</span></p>
 <p>Now, we can calculate the posterior distribution up to a constant of proportionality:</p>
 <p><span class="math display">\[
-\pi(\alpha|x) \propto\pi(\alpha)L(x)
+\pi(\alpha|\boldsymbol{x}) \propto\pi(\alpha)L(\boldsymbol{x})
 \]</span></p>
 <p>But, it will be better to use the log of the posterior distribution to mitigate any computational issues that may arise.</p>
 <p><span class="math display">\[
-\log\pi(\alpha|x) = \log A + (\gamma-1)\log\alpha-N\log\zeta(\alpha+1)-\delta\alpha-(\alpha+1)\sum_{i=1}^N\log x_i
+\log\pi(\alpha|\boldsymbol{x}) = \log A + (\gamma-1)\log\alpha-N\log\zeta(\alpha+1)-\delta\alpha-(\alpha+1)\sum_{i=1}^N\log x_i
 \]</span></p>
+<p>Where <span class="math inline">\(A\)</span> is a normalising constant.</p>
 <p>With this posterior we can fit the model to both sets of our data.</p>
-<section id="plots-of-zeta-model-fit" class="level2">
-<h2 class="anchored" data-anchor-id="plots-of-zeta-model-fit">Plots of Zeta Model Fit</h2>
+<section id="plots-of-power-law-model-fit" class="level2">
+<h2 class="anchored" data-anchor-id="plots-of-power-law-model-fit">Plots of Power Law Model Fit</h2>
+<p>The same prior was used for both models below, with <span class="math inline">\(\gamma = \delta = 4\)</span> . The parameters were estimated using a Metropolis-Hastings algorithm with an adaptive proposal, with initial value of <span class="math inline">\(\alpha = 2\)</span>.</p>
 <section id="depends-data" class="level3">
 <h3 class="anchored" data-anchor-id="depends-data">Depends Data</h3>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/Zeta%20Depends-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
-<section id="imports-data" class="level3">
-<h3 class="anchored" data-anchor-id="imports-data">Imports Data</h3>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/Zeta%20Imports%20-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
-<section id="depends-data-without-zeros" class="level3">
-<h3 class="anchored" data-anchor-id="depends-data-without-zeros">Depends Data (without zeros)</h3>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="CRAN_files/figure-html/Zeta%20Depends%20no%20zeros%20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
-<section id="imports-data-without-zeros" class="level3">
-<h3 class="anchored" data-anchor-id="imports-data-without-zeros">Imports Data (without zeros)</h3>
+<section id="imports-data" class="level3">
+<h3 class="anchored" data-anchor-id="imports-data">Imports Data</h3>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="CRAN_files/figure-html/Zeta%20Imports%20no%20zeros%20-1.png" class="img-fluid" width="672"></p>
@@ -215,9 +220,9 @@ L(x) = \zeta(\alpha+1)^{-N}\prod_{i=1}^N x_i^{-(\alpha+1)}
 </section>
 </section>
 </section>
-<section id="zeta-igpd-model" class="level1">
-<h1>Zeta-IGPD Model</h1>
-<p>Since the zeta model seems to not fit very well, we now aim to fit a new model to the data that may fit better. This model model the data as before below a certain threshold but above it the data is modeled using the integer-valued generalised Pareto distribution. The p.m.f of this model is</p>
+<section id="power-law-igpd-model" class="level1">
+<h1>Power Law-IGPD Model</h1>
+<p>Since the power law model seems to not fit very well, we now aim to fit a new model to the data that may fit better. This model treats the data as a power law below a certain threshold but above it the data is modeled using the integer-valued generalised Pareto distribution (IGPD). The p.m.f of this model is</p>
 <p><span class="math display">\[
 f(x) =
 \begin{cases}
@@ -247,13 +252,13 @@ S(x) =
 \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left(1+\frac{\xi x}{\sigma_u}\right)_+^{-1/\xi}&amp;,x&gt;u
 \end{cases}
 \]</span></p>
-<p>If we have a vector of data <span class="math inline">\(x = (x_1,x_2,\ldots x_N)^T\)</span> then the likelihood and log-likelihood are:</p>
+<p>If we have a vector of data <span class="math inline">\(\boldsymbol{x} = (x_1,x_2,\ldots x_N)^T\)</span> then the likelihood and log-likelihood are:</p>
 <p><span class="math display">\[
-L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)}\prod_{i:x_i&gt;u}\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
+L(\boldsymbol{x}) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)}\prod_{i:x_i&gt;u}\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
 \]</span></p>
 <p>and,</p>
 <p><span class="math display">\[
-\ell(x) = -n\log\zeta(\alpha+1)+(N-n)\log C_{\alpha,u} -(\alpha+1)\sum_{i:x_i\leq u}\log x_i + \sum_{i:x_i&gt;u}\log\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
+\ell(\boldsymbol{x}) = -n\log\zeta(\alpha+1)+(N-n)\log C_{\alpha,u} -(\alpha+1)\sum_{i:x_i\leq u}\log x_i + \sum_{i:x_i&gt;u}\log\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
 \]</span></p>
 <p>where <span class="math inline">\(C_{\alpha,u} = 1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\)</span>.</p>
 <p>Since we wish to use this to construct a Metropolis-Hastings algorithm we again need some priors for the values of the parameters. The priors we use are listed below.</p>
@@ -285,7 +290,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <p>We can now use this to fit the model for various thresholds, the thresholds we will be using will be based on the quantiles of our data.</p>
 <section id="method-for-fitting" class="level2">
 <h2 class="anchored" data-anchor-id="method-for-fitting">Method for fitting</h2>
-<p>In order to fit this model we will be using a Metropolis-Hastings algorithm with an adaptive proposal distribution, the method is fully described below:</p>
+<p>In order to fit this model we will be using a bayesian approach, estimating the parameters using a Metropolis-Hastings algorithm with an adaptive proposal distribution, the method is fully described below:</p>
 <p>Suppose we have the initial state <span class="math inline">\(\theta^{(0)} = (\alpha^{(0)},\xi^{(0)},\sigma_u^{(0)})\)</span> and an initial proposal covariance matrix <span class="math inline">\(\Sigma^{(0)}\)</span>. Let <span class="math inline">\(\Omega\)</span> be the ordered set of accepted states that is initially empty. Starting with <span class="math inline">\(t=1\)</span>.</p>
 <ol type="1">
 <li><ul>
@@ -399,6 +404,139 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 </section>
 </section>
 </section>
+<section id="power-law-mixture" class="level1">
+<h1>Power Law Mixture</h1>
+<p>To see if the previous model is worth using we will compare it to a simpler model that models the data both above and below the threshold as a power law but with different parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> . The p.m.f of this model is:</p>
+<p><span class="math display">\[
+f(x) =
+\begin{cases}
+(1-\phi_u)\left[\zeta(\alpha+1) - \zeta(\alpha+1,u+1)\right]^{-1}x^{-(\alpha+1)}&amp;,x\le u\\
+\phi_u\zeta(\beta+1,u+1)^{-1}x^{-(\beta+1)}&amp;,x&gt;u
+\end{cases}
+\]</span></p>
+<p>Where <span class="math inline">\(\alpha,\beta &gt;0\)</span> and <span class="math inline">\(\phi_u \in (0,1)\)</span> is the excedance probability, and <span class="math inline">\(\zeta(s,t) = \sum_{k=t}^\infty k^{-s}\)</span> is the Hurwitz zeta function. From now on, we will use <span class="math inline">\(\zeta_{t-1}(s)\)</span> to denote the Hurwitz zeta function with paramters <span class="math inline">\(s\)</span> and <span class="math inline">\(t\)</span> .</p>
+<p>This makes the survival function of this model:</p>
+<p><span class="math display">\[
+S(x) =
+\begin{cases}
+1-(1-\phi_u)\frac{\zeta(\alpha+1)-\zeta_{x}(\alpha+1)}{\zeta(\alpha+1)-\zeta_{u}(\alpha+1)} &amp;,x\le u\\
+\phi_u\frac{\zeta_{x}(\beta+1)}{\zeta_{u}(\beta+1)}&amp;,x&gt;u
+\end{cases}
+\]</span></p>
+<p>As before we have data <span class="math inline">\(\boldsymbol{x} = (x_1,x_2,\ldots,x_N)^T\)</span> , the likelihood function for this model is as below:</p>
+<p><span class="math display">\[
+L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n} \left[\zeta(\alpha+1) - \zeta_{u}(\alpha+1)\right]^{-n} \zeta_{u}(\beta+1)^{n-N} \prod_{i:x_i\le u}x_i^{-(\alpha+1)}\prod_{i:x_i&gt;u}x_i^{-(\beta+1)}
+\]</span></p>
+<p>and the log likelihood:</p>
+<p><span class="math display">\[
+\ell(\boldsymbol{x}) = n\log(1-\phi_u) + (N-n)\log\phi_u -n\log\left[\zeta(\alpha+1) - \zeta_{u}(\alpha+1)\right] + (n-N)\log\zeta_u(\beta+1) - (\alpha+1)\sum_{i:x_i \le u}{\log x_i} -(\beta+1)\sum_{i:x_i&gt;u}\log x_i
+\]</span></p>
+<p>We will be fitting this model using a bayesian approach and so we need to decide a prior for both <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>. We will use the same prior for <span class="math inline">\(\alpha\)</span> as we have for the last two models, and we will use the exact same prior for <span class="math inline">\(\beta\)</span> . That is:</p>
+<p><span class="math display">\[
+\alpha,\beta \sim Ga(\gamma,\delta)
+\]</span></p>
+<p>We will be treating <span class="math inline">\(\phi_u\)</span> as a fixed value, using the MLE as its value; <span class="math inline">\(\hat\phi_u = \frac{\sum_{i=1}^N I_{x_i&gt;u}(x_i)}{N}\)</span></p>
+<section id="plots-of-fitted-model-1" class="level2">
+<h2 class="anchored" data-anchor-id="plots-of-fitted-model-1">Plots of fitted model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>n.iter <span class="ot">=</span> <span class="fl">3e4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="depends-data-1" class="level3">
+<h3 class="anchored" data-anchor-id="depends-data-1">Depends Data</h3>
+<section id="quantile-0.95-2" class="level4">
+<h4 class="anchored" data-anchor-id="quantile-0.95-2">Quantile 0.95</h4>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="quantile-0.96-2" class="level4">
+<h4 class="anchored" data-anchor-id="quantile-0.96-2">Quantile 0.96</h4>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="quantile-0.97-2" class="level4">
+<h4 class="anchored" data-anchor-id="quantile-0.97-2">Quantile 0.97</h4>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="quantile-0.98-2" class="level4">
+<h4 class="anchored" data-anchor-id="quantile-0.98-2">Quantile 0.98</h4>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="imports-data-1" class="level3">
+<h3 class="anchored" data-anchor-id="imports-data-1">Imports Data</h3>
+<section id="quantile-0.95-3" class="level4">
+<h4 class="anchored" data-anchor-id="quantile-0.95-3">Quantile 0.95</h4>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="quantile-0.96-3" class="level4">
+<h4 class="anchored" data-anchor-id="quantile-0.96-3">Quantile 0.96</h4>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="quantile-0.97-3" class="level4">
+<h4 class="anchored" data-anchor-id="quantile-0.97-3">Quantile 0.97</h4>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="quantile-0.98-3" class="level4">
+<h4 class="anchored" data-anchor-id="quantile-0.98-3">Quantile 0.98</h4>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="CRAN_files/figure-html/unnamed-chunk-18-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
 <section id="notes" class="level1">
 <h1>Notes</h1>
 <section id="implementation-of-zeta-function" class="level2">
@@ -408,7 +546,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h3 class="anchored" data-anchor-id="defaults">Defaults</h3>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -416,7 +554,7 @@ L(x) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)
 <h3 class="anchored" data-anchor-id="increasing-the-value-of-aa">Increasing the value of aa</h3>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="CRAN_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="CRAN_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
