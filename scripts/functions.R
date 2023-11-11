@@ -5,8 +5,8 @@
   require(ismev)
   require(extRemes)
   require(VGAM)
-  require(rjags)
   require(gsl)
+  require(MASS)
 }
 #functions
 {
@@ -369,52 +369,90 @@
   }
 }
 # -------------------------------------------------------------------------
-# 
-# df = load_data('rpkg_20190129.csv')
-# df0 = df-1
-# 
+
+df = load_data('rpkg_20190129.csv')
+df0 = df-1
+p=0.95
+
+
+dat = df0$imports[df0$imports>0]
+n.iter = 1e4
+
+fast_zc_mcmc <- function(n.iter,dat, p ) {
+  u = quantile(dat,p)
+  phi = sum(dat>u)/length(dat)
+  pri.pars = list(alpha=c(1,0.01))
+  
+  init = c(2,2)
+  
+  mcmc.out = zc.mcmc(n.iter,dat,phi,u,init,pri.pars,H=100)
+  plot_zc_mcmc(mcmc.out,pri.pars,dat,phi,u)
+  return(mcmc.out)
+}
+
+
+
+alpha_beta_prior = function(a,b,pri.pars){
+  return(alpha.prior(a,pri.pars,log=F)*alpha.prior(b,pri.pars,log=F))
+}
+
+
+
+plot_zc_mcmc <- function(mcmc.out, pri.pars, dat, phi, u,burn.in = 0.2*nrow(mcmc.out)) {
+  
+  mcmc.out = mcmc.out[-(1:burn.in),]
+  a = seq(0.1,max(mcmc.out),length.out=2e3)
+  pri.dens = outer(a,a,FUN=alpha_beta_prior,pri.pars=pri.pars$alpha)
+  
+  xlim = range(mcmc.out$alpha)
+  ylim = range(mcmc.out$beta)
+  
+  layout_mat = t(matrix(c(4,2,2,2,
+                        3,1,1,1,
+                        3,1,1,1,
+                        3,1,1,1),nrow=4))
+  layout(layout_mat)
+  par(mar=c(4,0,0,0))
+  contour(kde2d(mcmc.out[-(1:burn.in),]$alpha,mcmc.out[-(1:burn.in),]$beta),xlim=xlim,ylim=ylim,xlab='alpha')
+  contour(a,a,pri.dens,add=T,lty=2,nlevels=15)
+  par(mar=c(0,0,0,0))
+  plot(density(mcmc.out[-(1:burn.in),]$alpha),main='',ylab='',xlab = 'alpha',xlim=xlim,xaxt='n',yaxt='n')
+  lines(a,alpha.prior(a,pri.pars$alpha,log=F),lty=2)
+  b.dens = density(mcmc.out[-(1:burn.in),]$beta)
+  par(mar=c(4,0,0,0))
+  plot(b.dens$y,b.dens$x,type='l',xlim=c(max(b.dens$y),0),ylim=ylim,xaxt='n',xlab='',ylab='beta')
+  lines(alpha.prior(a,pri.pars$alpha,log=F),a,lty=2)
+  
+  par(mfrow=c(1,1),mar=c(3,3,3,3))
+  
+  abline(a=0,b=1,lty=2)
+  means = apply(mcmc.out,2,mean)
+  uppers = apply(mcmc.out,2,quantile,probs=0.95)
+  lowers = apply(mcmc.out,2,quantile,probs=0.05)
+  k=1:3e3
+  plot(ecdf2(dat),type='l',log='xy')
+  
+  lines(k,pzc(k,phi,u,lowers[1],lowers[2]),lty=2,col='blue')
+  lines(k,pzc(k,phi,u,means[1],means[2]),col='red')
+  lines(k,pzc(k,phi,u,uppers[1],uppers[2]),lty=2,col='blue')
+  
+  legend('bottomleft',legend = c(paste('Threshold = ', u),
+                                 paste('# <= ',u,': ',sum(dat<=u)),
+                                 paste('# > ',u,': ',sum(dat>u)),
+                                 paste('Phi: ',signif(phi,2)),
+                                 paste('Alpha: ', round(means[1],2)),
+                                 paste('Beta: ', round(means[2],2))))
+  
+  
+}
+
+
+
+# -------------------------------------------------------------------------
 # dat = df0$imports[df0$imports>0]
-# n.iter = 1e4
-# u = 37
-# phi = sum(dat>u)/length(dat)
-# pri.pars = list(alpha=c(1,0.01))
-# 
-# init = c(2,2)
-# 
-# mcmc.out = zc.mcmc(n.iter,dat,phi,u,init,pri.pars,H=100)
-# 
-# 
-# plot(mcmc.out,type='b')
-# abline(a=0,b=1,lty=2)
-# 
-# 
-# 
-# 
-# means = apply(mcmc.out,2,mean)
-# uppers = apply(mcmc.out,2,quantile,probs=0.95)
-# lowers = apply(mcmc.out,2,quantile,probs=0.05)
-# 
-# 
-# k=1:3e3
-# plot(ecdf2(dat),type='l',log='xy')
-# 
-# lines(k,pzc(k,phi,u,lowers[1],lowers[2]),lty=2,col='red')
-# lines(k,pzc(k,phi,u,means[1],means[2]),col='red')
-# lines(k,pzc(k,phi,u,uppers[1],uppers[2]),lty=2,col='red')
-# 
-# # -------------------------------------------------------------------------
-# 
-# n = 60
-# N = 1e2
-# 
-# u=15
-# 
-# 
-# 
-# b = seq(0.01,5,length.out=100)
-# l = (n-N)*log(gsl::hzeta(b+1,u+1)) - (b+1)*2e2
-# 
-# plot(b,l,type='l')
+# out = fast_zc_mcmc(1e4,dat,0.97)
+
+
 
 
 
