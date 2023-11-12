@@ -347,28 +347,44 @@ n.iter = 3e4
 
 #### Quantile 0.95
 
+<<<<<<< HEAD
 ```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.ncol=2}
+=======
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+>>>>>>> refs/remotes/origin/master
 mcmc.out = fast_zc_mcmc(n.iter,df0$depends[df0$depends>0],0.95)
 
 ```
 
 #### Quantile 0.96
 
+<<<<<<< HEAD
 ```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.ncol=2}
+=======
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+>>>>>>> refs/remotes/origin/master
 mcmc.out = fast_zc_mcmc(n.iter,df0$depends[df0$depends>0],0.96)
 
 ```
 
 #### Quantile 0.97
 
+<<<<<<< HEAD
 ```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.ncol=2}
+=======
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+>>>>>>> refs/remotes/origin/master
 mcmc.out = fast_zc_mcmc(n.iter,df0$depends[df0$depends>0],0.97)
 
 ```
 
 #### Quantile 0.98
 
+<<<<<<< HEAD
 ```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.ncol=2}
+=======
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+>>>>>>> refs/remotes/origin/master
 mcmc.out = fast_zc_mcmc(n.iter,df0$depends[df0$depends>0],0.98)
 
 ```
@@ -377,28 +393,44 @@ mcmc.out = fast_zc_mcmc(n.iter,df0$depends[df0$depends>0],0.98)
 
 #### Quantile 0.95
 
+<<<<<<< HEAD
 ```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.ncol=2}
+=======
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+>>>>>>> refs/remotes/origin/master
 mcmc.out = fast_zc_mcmc(n.iter,df0$imports[df0$imports>0],0.95)
 
 ```
 
 #### Quantile 0.96
 
+<<<<<<< HEAD
 ```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.ncol=2}
+=======
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+>>>>>>> refs/remotes/origin/master
 mcmc.out = fast_zc_mcmc(n.iter,df0$imports[df0$imports>0],0.96)
 
 ```
 
 #### Quantile 0.97
 
+<<<<<<< HEAD
 ```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.ncol=2}
+=======
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+>>>>>>> refs/remotes/origin/master
 mcmc.out = fast_zc_mcmc(n.iter,df0$imports[df0$imports>0],0.97)
 
 ```
 
 #### Quantile 0.98
 
+<<<<<<< HEAD
 ```{r,echo=FALSE,message=FALSE,warning=FALSE, fig.ncol=2}
+=======
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+>>>>>>> refs/remotes/origin/master
 mcmc.out = fast_zc_mcmc(n.iter,df0$imports[df0$imports>0],0.98)
 
 ```
