@@ -135,7 +135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#implementation-of-zeta-function" id="toc-implementation-of-zeta-function" class="nav-link" data-scroll-target="#implementation-of-zeta-function">Implementation of zeta function</a>
   <ul>
   <li><a href="#defaults" id="toc-defaults" class="nav-link" data-scroll-target="#defaults">Defaults</a></li>
-  <li><a href="#increasing-the-value-of-aa" id="toc-increasing-the-value-of-aa" class="nav-link" data-scroll-target="#increasing-the-value-of-aa">Increasing the value of aa</a></li>
+  <li><a href="#increasing-the-value-of-aa-to-300" id="toc-increasing-the-value-of-aa-to-300" class="nav-link" data-scroll-target="#increasing-the-value-of-aa-to-300">Increasing the value of aa to 300</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -226,46 +226,38 @@ L(\boldsymbol{x}) = \zeta(\alpha+1)^{-N}\prod_{i=1}^N x_i^{-(\alpha+1)}
 <p><span class="math display">\[
 f(x) =
 \begin{cases}
-\zeta(\alpha+1)^{-1}x^{-(\alpha+1)}&amp;, x\leq u\\
-\left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left\{\left(1+\frac{\xi(x-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x}{\sigma_u}\right)_+^{-1/\xi}\right\}&amp;,x&gt;u
+(1-\phi_u)\left[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)\right]^{-1}x^{-(\alpha+1)}&amp;, x\leq u\\
+\phi_u\left\{\left(1+\frac{\xi(x-u-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi (x-u)}{\sigma_u}\right)_+^{-1/\xi}\right\}&amp;,x&gt;u
 \end{cases}
 \]</span></p>
 <p>And the cumulative mass function is given by:</p>
 <p><span class="math display">\[
 F(x) = \begin{cases}
-\zeta(\alpha+1)^{-1}\sum_{k=1}^xk^{-(\alpha+1)}&amp;,x\leq u\\
-\zeta(\alpha+1)^{-1}\sum_{k=1}^uk^{-(\alpha+1)} + \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\sum_{k=u+1}^x\left\{\left(1+\frac{\xi(k-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi k}{\sigma_u}\right)_+^{-1/\xi}\right\}&amp;,x&gt;u
-\end{cases}
-\]</span></p>
-<p>This can be simplified to:</p>
-<p><span class="math display">\[
-F(x) = \begin{cases}
-\zeta(\alpha+1)^{-1}\sum_{k=1}^xk^{-(\alpha+1)}&amp;,x\leq u\\
-\zeta(\alpha+1)^{-1}\sum_{k=1}^uk^{-(\alpha+1)} + \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left\{1 - \left(1+\frac{\xi k}{\sigma_u}\right)_+^{-1/\xi}\right\}&amp;,x&gt;u
+(1-\phi_u)\frac{\zeta(\alpha+1)-\zeta(\alpha+1,x+1)}{\zeta(\alpha+1)-\zeta(\alpha+1,u+1)}&amp;,x\leq u\\
+(1-\phi_u) + \phi_u\left[1-\left(1+\frac{\xi(x-u)}{\sigma_u}\right)_+^{-1/\xi}\right]&amp;,x&gt;u
 \end{cases}
 \]</span></p>
 <p>Which makes the survival function of this model:</p>
 <p><span class="math display">\[
 S(x) =
 \begin{cases}
-1-\zeta(\alpha+1)^{-1}\sum_{k=1}^x k^{-(\alpha+1)}&amp;,x\leq u\\
-\left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left(1+\frac{\xi x}{\sigma_u}\right)_+^{-1/\xi}&amp;,x&gt;u
+1-(1-\phi_u)\frac{\zeta(\alpha+1)-\zeta(\alpha+1,x+1)}{\zeta(\alpha+1)-\zeta(\alpha+1,u+1)}&amp;,x\leq u\\
+\phi_u\left(1+\frac{\xi(x-u)}{\sigma_u}\right)_+^{-1/\xi}&amp;,x&gt;u
 \end{cases}
 \]</span></p>
 <p>If we have a vector of data <span class="math inline">\(\boldsymbol{x} = (x_1,x_2,\ldots x_N)^T\)</span> then the likelihood and log-likelihood are:</p>
 <p><span class="math display">\[
-L(\boldsymbol{x}) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)}\prod_{i:x_i&gt;u}\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
+L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n}[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)]^{-n}\prod_{i:x_i \le u} x_i^{-(\alpha+1)}\prod_{i:x_i&gt;u}\left\{\left(1+\frac{\xi(x_i-u-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi (x_i-u)}{\sigma_u}\right)_+^{-1/\xi}\right\}
 \]</span></p>
 <p>and,</p>
 <p><span class="math display">\[
-\ell(\boldsymbol{x}) = -n\log\zeta(\alpha+1)+(N-n)\log C_{\alpha,u} -(\alpha+1)\sum_{i:x_i\leq u}\log x_i + \sum_{i:x_i&gt;u}\log\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
+\ell(\boldsymbol{x}) = n\log(1-\phi_u) + (N-n)\log\phi_u-n\log[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)] -(\alpha+1)\sum_{i:x_i\leq u}\log x_i + \sum_{i:x_i&gt;u}\log\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
 \]</span></p>
-<p>where <span class="math inline">\(C_{\alpha,u} = 1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\)</span>.</p>
 <p>Since we wish to use this to construct a Metropolis-Hastings algorithm we again need some priors for the values of the parameters. The priors we use are listed below.</p>
 <p><span class="math display">\[
-\alpha\sim Ga(\gamma,\delta),\\
+\alpha\sim Ga(c,d),\\
 \xi \sim N(0,s^2),\\
-\sigma_u \sim Ga(\phi,\psi)
+\sigma_u \sim Ga(v,w)
 \]</span></p>
 <p>Our joint prior distribution is defined as follows:</p>
 <span class="math display">\[\begin{align}
@@ -274,23 +266,13 @@ L(\boldsymbol{x}) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i
 \end{align}\]</span>
 <p>And we have that</p>
 <span class="math display">\[\begin{align}
-\log\pi(\alpha) &amp;= \gamma\log\delta - \log\Gamma(\gamma) + (\gamma-1)\log\alpha -\delta\alpha\\
+\log\pi(\alpha) &amp;= c\log d - \log \Gamma(c) + (c-1)\log\alpha -d\alpha\\
 \log\pi(\xi) &amp;= -\log s -0.5\log 2\pi - \frac{\xi^2}{2s^2}\\
-\log\pi(\sigma_u) &amp;= \phi\log\psi - \log\Gamma(\phi) + (\phi-1)\log\sigma_u - \psi\sigma_u
+\log\pi(\sigma_u) &amp;= v\log w - \log\Gamma(v) + (v-1)\log\sigma_u - w\sigma_u
 \end{align}\]</span>
-<p>Which we can then use to construct the joint posterior:</p>
-<span class="math display">\[\begin{align}
-\pi(\alpha,\xi,\sigma_u|x) &amp;\propto L(x)\pi(\alpha,\xi,\sigma_u)\\
-                            &amp;=L(x)\pi(\alpha)\pi(\xi)\pi(\sigma_u)\\
-\log\pi(\alpha,\xi,\sigma_u|x) &amp;= \log A + \ell(x) +  \log\pi(\alpha) +\log\pi(\xi) + \log\pi(\sigma_u)\\
-&amp;= \log B - n\log\zeta(\alpha+1) - (\alpha + 1)\sum_{i:x_i\leq u}\log x_i + (N-n)\log C_{\alpha,u} + \sum_{i:x_i&gt;u}\log[G(x_i-1) - G(x_i)]\\
-
-&amp;\qquad + (\gamma-1)\log\alpha - \delta\alpha -\frac{\xi^2}{2s^2} + (\phi-1)\log\sigma_u - \psi\sigma_u
-\end{align}\]</span>
-<p>We can now use this to fit the model for various thresholds, the thresholds we will be using will be based on the quantiles of our data.</p>
 <section id="method-for-fitting" class="level2">
 <h2 class="anchored" data-anchor-id="method-for-fitting">Method for fitting</h2>
-<p>In order to fit this model we will be using a bayesian approach, estimating the parameters using a Metropolis-Hastings algorithm with an adaptive proposal distribution, the method is fully described below:</p>
+<p>In order to fit this model we will be using a Bayesian approach, estimating the parameters using a Metropolis-Hastings algorithm with an adaptive proposal distribution, the method is fully described below:</p>
 <p>Suppose we have the initial state <span class="math inline">\(\theta^{(0)} = (\alpha^{(0)},\xi^{(0)},\sigma_u^{(0)})\)</span> and an initial proposal covariance matrix <span class="math inline">\(\Sigma^{(0)}\)</span>. Let <span class="math inline">\(\Omega\)</span> be the ordered set of accepted states that is initially empty. Starting with <span class="math inline">\(t=1\)</span>.</p>
 <ol type="1">
 <li><ul>
@@ -332,6 +314,14 @@ L(\boldsymbol{x}) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>n.iter<span class="ot">=</span><span class="fl">1e4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>The models below were obtained using hyperparameters:</p>
+<p><span class="math display">\[
+c=1,d=0.01,s=3,v=1,w=0.01
+\]</span></p>
+<p>The initial values used were:</p>
+<p><span class="math display">\[
+\alpha=2,\xi=3,\sigma_u=5
+\]</span></p>
 <section id="depends-without-zeros" class="level3">
 <h3 class="anchored" data-anchor-id="depends-without-zeros">Depends Without Zeros</h3>
 <section id="quantile-0.95" class="level4">
@@ -423,7 +413,7 @@ S(x) =
 \phi_u\frac{\zeta_{x}(\beta+1)}{\zeta_{u}(\beta+1)}&amp;,x&gt;u
 \end{cases}
 \]</span></p>
-<p>As before we have data <span class="math inline">\(\boldsymbol{x} = (x_1,x_2,\ldots,x_N)^T\)</span> , the likelihood function for this model is as below:</p>
+<p>As before we have data <span class="math inline">\(\boldsymbol{x} = (x_1,x_2,\ldots,x_N)^T\)</span> with <span class="math inline">\(n\)</span> values at or below the threshold <span class="math inline">\(u\)</span> , the likelihood function for this model is as below:</p>
 <p><span class="math display">\[
 L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n} \left[\zeta(\alpha+1) - \zeta_{u}(\alpha+1)\right]^{-n} \zeta_{u}(\beta+1)^{n-N} \prod_{i:x_i\le u}x_i^{-(\alpha+1)}\prod_{i:x_i&gt;u}x_i^{-(\beta+1)}
 \]</span></p>
@@ -435,12 +425,20 @@ L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n} \left[\zeta(\alpha+1) - \zeta_{u}(\
 <p><span class="math display">\[
 \alpha,\beta \sim Ga(\gamma,\delta)
 \]</span></p>
-<p>We will be treating <span class="math inline">\(\phi_u\)</span> as a fixed value, using the MLE as its value; <span class="math inline">\(\hat\phi_u = \frac{\sum_{i=1}^N I_{x_i&gt;u}(x_i)}{N}\)</span></p>
+<p>We will be treating <span class="math inline">\(\phi_u\)</span> as a fixed value, using the MLE as its value; <span class="math inline">\(\hat\phi_u = \frac{N-n}{N}\)</span></p>
 <section id="plots-of-fitted-model-1" class="level2">
 <h2 class="anchored" data-anchor-id="plots-of-fitted-model-1">Plots of fitted model</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>n.iter <span class="ot">=</span> <span class="fl">3e4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>We used the hyperparamters:</p>
+<p><span class="math display">\[
+\gamma=1,\delta=0.01
+\]</span></p>
+<p>and initial values:</p>
+<p><span class="math display">\[
+\alpha=\beta=2
+\]</span></p>
 <section id="depends-data-1" class="level3">
 <h3 class="anchored" data-anchor-id="depends-data-1">Depends Data</h3>
 <section id="quantile-0.95-2" class="level4">
@@ -561,13 +559,52 @@ L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n} \left[\zeta(\alpha+1) - \zeta_{u}(\
 <section id="defaults" class="level3">
 <h3 class="anchored" data-anchor-id="defaults">Defaults</h3>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>zeta_mod <span class="ot">=</span> <span class="cf">function</span> (x, <span class="at">deriv =</span> <span class="dv">0</span>, <span class="at">shift =</span> <span class="dv">1</span>,<span class="at">aa=</span><span class="dv">12</span>) </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    deriv.arg <span class="ot">&lt;-</span> deriv</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rm</span>(deriv)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.Numeric</span>(deriv.arg, <span class="at">length.arg =</span> <span class="dv">1</span>, <span class="at">integer.valued =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">"'deriv' must be a single non-negative integer"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (deriv.arg <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">||</span> deriv.arg <span class="sc">&gt;</span> <span class="dv">2</span>) </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">"'deriv' must be 0, 1, or 2"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (deriv.arg <span class="sc">&gt;</span> <span class="dv">0</span>) </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(<span class="fu">zeta.specials</span>(<span class="fu">Zeta.derivative</span>(x, <span class="at">deriv.arg =</span> deriv.arg, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">shift =</span> shift), x, deriv.arg, shift))</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">any</span>(special <span class="ot">&lt;-</span> <span class="fu">Re</span>(x) <span class="sc">&lt;=</span> <span class="dv">1</span>)) {</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        ans <span class="ot">&lt;-</span> x</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        ans[special] <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        special3 <span class="ot">&lt;-</span> <span class="fu">Re</span>(x) <span class="sc">&lt;</span> <span class="dv">1</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        ans[special3] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        special4 <span class="ot">&lt;-</span> (<span class="dv">0</span> <span class="sc">&lt;</span> <span class="fu">Re</span>(x)) <span class="sc">&amp;</span> (<span class="fu">Re</span>(x) <span class="sc">&lt;</span> <span class="dv">1</span>) <span class="sc">&amp;</span> (<span class="fu">Im</span>(x) <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        ans[special4] <span class="ot">&lt;-</span> <span class="fu">Zeta.derivative</span>(x[special4], <span class="at">deriv.arg =</span> deriv.arg, </span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">shift =</span> shift)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        special2 <span class="ot">&lt;-</span> <span class="fu">Re</span>(x) <span class="sc">&lt;</span> <span class="dv">0</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">any</span>(special2)) {</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            x2 <span class="ot">&lt;-</span> x[special2]</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            cx <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> x2</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            ans[special2] <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">^</span>(x2) <span class="sc">*</span> pi<span class="sc">^</span>(x2 <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="fu">sin</span>(pi <span class="sc">*</span> </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>                x2<span class="sc">/</span><span class="dv">2</span>) <span class="sc">*</span> <span class="fu">gamma</span>(cx) <span class="sc">*</span> <span class="fu">Recall</span>(cx)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">any</span>(<span class="sc">!</span>special)) {</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>            ans[<span class="sc">!</span>special] <span class="ot">&lt;-</span> <span class="fu">Recall</span>(x[<span class="sc">!</span>special])</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(<span class="fu">zeta.specials</span>(ans, x, deriv.arg, shift))</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    ans <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span>(aa <span class="sc">-</span> <span class="dv">1</span>)) ans <span class="ot">&lt;-</span> ans <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(shift <span class="sc">+</span> ii)<span class="sc">^</span>x</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    ans <span class="ot">&lt;-</span> ans <span class="sc">+</span> <span class="fu">Zeta.aux</span>(<span class="at">shape =</span> x, aa, <span class="at">shift =</span> shift)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    ans[shift <span class="sc">&lt;=</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="cn">NaN</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">zeta.specials</span>(ans, x, <span class="at">deriv.arg =</span> deriv.arg, <span class="at">shift =</span> shift)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
 <div class="cell-output-display">
 <p><img src="CRAN_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
-<section id="increasing-the-value-of-aa" class="level3">
-<h3 class="anchored" data-anchor-id="increasing-the-value-of-aa">Increasing the value of aa</h3>
+<section id="increasing-the-value-of-aa-to-300" class="level3">
+<h3 class="anchored" data-anchor-id="increasing-the-value-of-aa-to-300">Increasing the value of aa to 300</h3>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="CRAN_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>

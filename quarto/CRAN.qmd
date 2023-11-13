@@ -46,7 +46,7 @@ $$
 \ell(\boldsymbol{x}) = -N\log\zeta(\alpha+1) - (\alpha+1)\sum_{i=1}^N\log x_i
 $$
 
-We now aim to fit this model using a bayesian approach, which means we need to decide on a prior for $\alpha$. Since its value is restricted to being positive we choose to use a Gamma prior, that is:
+We now aim to fit this model using a Bayesian approach, which means we need to decide on a prior for $\alpha$. Since its value is restricted to being positive we choose to use a Gamma prior, that is:
 
 $$
 \alpha \sim Ga(\gamma,\delta), \qquad \gamma,\delta > 0
@@ -98,8 +98,8 @@ Since the power law model seems to not fit very well, we now aim to fit a new mo
 $$
 f(x) =
 \begin{cases}
-\zeta(\alpha+1)^{-1}x^{-(\alpha+1)}&, x\leq u\\
-\left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left\{\left(1+\frac{\xi(x-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x}{\sigma_u}\right)_+^{-1/\xi}\right\}&,x>u
+(1-\phi_u)\left[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)\right]^{-1}x^{-(\alpha+1)}&, x\leq u\\
+\phi_u\left\{\left(1+\frac{\xi(x-u-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi (x-u)}{\sigma_u}\right)_+^{-1/\xi}\right\}&,x>u
 \end{cases}
 $$
 
@@ -107,17 +107,8 @@ And the cumulative mass function is given by:
 
 $$
 F(x) = \begin{cases}
-\zeta(\alpha+1)^{-1}\sum_{k=1}^xk^{-(\alpha+1)}&,x\leq u\\
-\zeta(\alpha+1)^{-1}\sum_{k=1}^uk^{-(\alpha+1)} + \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\sum_{k=u+1}^x\left\{\left(1+\frac{\xi(k-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi k}{\sigma_u}\right)_+^{-1/\xi}\right\}&,x>u
-\end{cases}
-$$
-
-This can be simplified to:
-
-$$
-F(x) = \begin{cases}
-\zeta(\alpha+1)^{-1}\sum_{k=1}^xk^{-(\alpha+1)}&,x\leq u\\
-\zeta(\alpha+1)^{-1}\sum_{k=1}^uk^{-(\alpha+1)} + \left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left\{1 - \left(1+\frac{\xi k}{\sigma_u}\right)_+^{-1/\xi}\right\}&,x>u
+(1-\phi_u)\frac{\zeta(\alpha+1)-\zeta(\alpha+1,x+1)}{\zeta(\alpha+1)-\zeta(\alpha+1,u+1)}&,x\leq u\\
+(1-\phi_u) + \phi_u\left[1-\left(1+\frac{\xi(x-u)}{\sigma_u}\right)_+^{-1/\xi}\right]&,x>u
 \end{cases}
 $$
 
@@ -126,31 +117,29 @@ Which makes the survival function of this model:
 $$
 S(x) = 
 \begin{cases}
-1-\zeta(\alpha+1)^{-1}\sum_{k=1}^x k^{-(\alpha+1)}&,x\leq u\\
-\left[1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}\right]\left(1+\frac{\xi x}{\sigma_u}\right)_+^{-1/\xi}&,x>u
+1-(1-\phi_u)\frac{\zeta(\alpha+1)-\zeta(\alpha+1,x+1)}{\zeta(\alpha+1)-\zeta(\alpha+1,u+1)}&,x\leq u\\
+\phi_u\left(1+\frac{\xi(x-u)}{\sigma_u}\right)_+^{-1/\xi}&,x>u
 \end{cases}
 $$
 
 If we have a vector of data $\boldsymbol{x} = (x_1,x_2,\ldots x_N)^T$ then the likelihood and log-likelihood are:
 
 $$
-L(\boldsymbol{x}) = \zeta(\alpha+1)^{-n}C_{\alpha,u}^{N-n}\prod_{i:x_i\leq u}x_i^{-(\alpha+1)}\prod_{i:x_i>u}\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
+L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n}[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)]^{-n}\prod_{i:x_i \le u} x_i^{-(\alpha+1)}\prod_{i:x_i>u}\left\{\left(1+\frac{\xi(x_i-u-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi (x_i-u)}{\sigma_u}\right)_+^{-1/\xi}\right\}
 $$
 
 and,
 
 $$
-\ell(\boldsymbol{x}) = -n\log\zeta(\alpha+1)+(N-n)\log C_{\alpha,u} -(\alpha+1)\sum_{i:x_i\leq u}\log x_i + \sum_{i:x_i>u}\log\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
+\ell(\boldsymbol{x}) = n\log(1-\phi_u) + (N-n)\log\phi_u-n\log[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)] -(\alpha+1)\sum_{i:x_i\leq u}\log x_i + \sum_{i:x_i>u}\log\left\{\left(1+\frac{\xi(x_i-u-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi (x_i-u)}{\sigma_u}\right)_+^{-1/\xi}\right\}
 $$
-
-where $C_{\alpha,u} = 1-\zeta(\alpha+1)^{-1}\sum_{k=1}^u k^{-(\alpha+1)}$.
 
 Since we wish to use this to construct a Metropolis-Hastings algorithm we again need some priors for the values of the parameters. The priors we use are listed below.
 
 $$
-\alpha\sim Ga(\gamma,\delta),\\
+\alpha\sim Ga(c,d),\\
 \xi \sim N(0,s^2),\\
-\sigma_u \sim Ga(\phi,\psi)
+\sigma_u \sim Ga(v,w)
 $$
 
 Our joint prior distribution is defined as follows:
@@ -165,28 +154,15 @@ And we have that
 
 ```{=tex}
 \begin{align}
-\log\pi(\alpha) &= \gamma\log\delta - \log\Gamma(\gamma) + (\gamma-1)\log\alpha -\delta\alpha\\
+\log\pi(\alpha) &= c\log d - \log \Gamma(c) + (c-1)\log\alpha -d\alpha\\
 \log\pi(\xi) &= -\log s -0.5\log 2\pi - \frac{\xi^2}{2s^2}\\
-\log\pi(\sigma_u) &= \phi\log\psi - \log\Gamma(\phi) + (\phi-1)\log\sigma_u - \psi\sigma_u
+\log\pi(\sigma_u) &= v\log w - \log\Gamma(v) + (v-1)\log\sigma_u - w\sigma_u
 \end{align}
 ```
-Which we can then use to construct the joint posterior:
-
-```{=tex}
-\begin{align}
-\pi(\alpha,\xi,\sigma_u|x) &\propto L(x)\pi(\alpha,\xi,\sigma_u)\\
-                            &=L(x)\pi(\alpha)\pi(\xi)\pi(\sigma_u)\\
-\log\pi(\alpha,\xi,\sigma_u|x) &= \log A + \ell(x) +  \log\pi(\alpha) +\log\pi(\xi) + \log\pi(\sigma_u)\\
-&= \log B - n\log\zeta(\alpha+1) - (\alpha + 1)\sum_{i:x_i\leq u}\log x_i + (N-n)\log C_{\alpha,u} + \sum_{i:x_i>u}\log[G(x_i-1) - G(x_i)]\\
-
-&\qquad + (\gamma-1)\log\alpha - \delta\alpha -\frac{\xi^2}{2s^2} + (\phi-1)\log\sigma_u - \psi\sigma_u 
-\end{align}
-```
-We can now use this to fit the model for various thresholds, the thresholds we will be using will be based on the quantiles of our data.
 
 ## Method for fitting
 
-In order to fit this model we will be using a bayesian approach, estimating the parameters using a Metropolis-Hastings algorithm with an adaptive proposal distribution, the method is fully described below:
+In order to fit this model we will be using a Bayesian approach, estimating the parameters using a Metropolis-Hastings algorithm with an adaptive proposal distribution, the method is fully described below:
 
 Suppose we have the initial state $\theta^{(0)} = (\alpha^{(0)},\xi^{(0)},\sigma_u^{(0)})$ and an initial proposal covariance matrix $\Sigma^{(0)}$. Let $\Omega$ be the ordered set of accepted states that is initially empty. Starting with $t=1$.
 
@@ -231,6 +207,18 @@ Suppose we have the initial state $\theta^{(0)} = (\alpha^{(0)},\xi^{(0)},\sigma
 ```{r}
 n.iter=1e4
 ```
+
+The models below were obtained using hyper parameters:
+
+$$
+c=1,d=0.01,s=3,v=1,w=0.01
+$$
+
+The initial values used were:
+
+$$
+\alpha=2,\xi=3,\sigma_u=5
+$$
 
 ### Depends Without Zeros
 
@@ -305,7 +293,7 @@ f(x) =
 \end{cases}
 $$
 
-Where $\alpha,\beta >0$ and $\phi_u \in (0,1)$ is the excedance probability, and $\zeta(s,t) = \sum_{k=t}^\infty k^{-s}$ is the Hurwitz zeta function. From now on, we will use $\zeta_{t-1}(s)$ to denote the Hurwitz zeta function with paramters $s$ and $t$ .
+Where $\alpha,\beta >0$ and $\phi_u \in (0,1)$ is the exceedance probability, and $\zeta(s,t) = \sum_{k=t}^\infty k^{-s}$ is the Hurwitz zeta function. From now on, we will use $\zeta_{t-1}(s)$ to denote the Hurwitz zeta function with parameters $s$ and $t$ .
 
 This makes the survival function of this model:
 
@@ -317,7 +305,7 @@ S(x) =
 \end{cases}
 $$
 
-As before we have data $\boldsymbol{x} = (x_1,x_2,\ldots,x_N)^T$ , the likelihood function for this model is as below:
+As before we have data $\boldsymbol{x} = (x_1,x_2,\ldots,x_N)^T$ with $n$ values at or below the threshold $u$ , the likelihood function for this model is as below:
 
 $$
 L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n} \left[\zeta(\alpha+1) - \zeta_{u}(\alpha+1)\right]^{-n} \zeta_{u}(\beta+1)^{n-N} \prod_{i:x_i\le u}x_i^{-(\alpha+1)}\prod_{i:x_i>u}x_i^{-(\beta+1)}
@@ -335,13 +323,25 @@ $$
 \alpha,\beta \sim Ga(\gamma,\delta)
 $$
 
-We will be treating $\phi_u$ as a fixed value, using the MLE as its value; $\hat\phi_u = \frac{\sum_{i=1}^N I_{x_i>u}(x_i)}{N}$
+We will be treating $\phi_u$ as a fixed value, using the MLE as its value; $\hat\phi_u = \frac{N-n}{N}$
 
 ## Plots of fitted model
 
 ```{r}
 n.iter = 3e4
 ```
+
+We used the hyperparamters:
+
+$$
+\gamma=1,\delta=0.01
+$$
+
+and initial values:
+
+$$
+\alpha=\beta=2
+$$
 
 ### Depends Data
 
@@ -419,8 +419,7 @@ Below is a plot demonstrating the difference in the values obtained from the two
 
 ### Defaults
 
-```{r, echo=FALSE}
-AA = 24
+```{r, echo=TRUE}
 zeta_mod = function (x, deriv = 0, shift = 1,aa=12) 
 {
     deriv.arg <- deriv
@@ -468,14 +467,16 @@ s = 3
 
 plot(k,gsl::hzeta(s,q=k), log='xy', type='l',lty=1, col=1,ylab=TeX('\\zeta(s,k)'))
 lines(k,zeta_mod(s,shift=k), lty=2)
+legend('bottomleft',legend=c('VGAM','gsl'),lty=c(2,1))
 
 ```
 
-### Increasing the value of aa
+### Increasing the value of aa to 300
 
 ```{r,echo=FALSE}
 aa = 3e2
 plot(k,gsl::hzeta(s,q=k), log='xy', type='l',lty=1, col=1,ylab=TeX('\\zeta(s,k)'))
 lines(k,zeta_mod(s,shift=k,aa=aa), lty=2)
+legend('bottomleft',legend=c('VGAM','gsl'),lty=c(2,1))
 
 ```

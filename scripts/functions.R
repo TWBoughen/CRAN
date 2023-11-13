@@ -131,7 +131,8 @@
       }
       return(list(res = acc.points, prop.var = var.vec))
     }
-    plot.zeta.mcmc = function(mcmc.out,dat){
+    plot.zeta.mcmc = function(mcmc.out,dat,burn.in = 0.2*length(mcmc.out)){
+      mcmc.out = mcmc.out[-(1:burn.in)]
       layout.mat = t(matrix(c(1,1,1,1,
                               2,2,3,3,
                               2,2,3,3),nrow=4))
@@ -261,6 +262,7 @@
       
       plot(density(mcmc.out[-(1:(0.2*nrow(mcmc.out))),1]), type='l',xlab='alpha',main='')
       lines(a,alpha.prior(a,pri.pars$alpha,log=F), lty=2)
+      legend('topright',legend=c('Prior','Posterior'),lty=c(2,1))
       s = seq(par.lower[2]-1,par.upper[2]+1,length.out=1e5)
       plot(density(mcmc.out[-(1:(0.2*nrow(mcmc.out))),2]), type='l',xlab='shape',main='')
       lines(s,shape.prior(s,pri.pars$shape,log=F), lty=2)
@@ -371,7 +373,7 @@
   fast_zc_mcmc <- function(n.iter,dat, p ) {
     u = quantile(dat,p)
     phi = sum(dat>u)/length(dat)
-    pri.pars = list(alpha=c(4,4))
+    pri.pars = list(alpha=c(1,0.01))
     init = c(2,2)
     mcmc.out = zc.mcmc(n.iter,dat,phi,u,init,pri.pars,H=100)
     plot_zc_mcmc(mcmc.out,pri.pars,dat,phi,u)
@@ -402,6 +404,7 @@
     par(mar=c(0,0,0,0))
     plot(density(mcmc.out[-(1:burn.in),]$alpha),main='',ylab='',xlab = 'alpha',xlim=xlim,xaxt='n',yaxt='n')
     lines(a,alpha.prior(a,pri.pars$alpha,log=F),lty=2)
+    legend('topright',legend=c('Prior','Posterior'),lty=c(2,1))
     b.dens = density(mcmc.out[-(1:burn.in),]$beta)
     par(mar=c(4,0,0,0))
     plot(b.dens$y,b.dens$x,type='l',xlim=c(max(b.dens$y),0),ylim=ylim,xaxt='n',xlab='',ylab='beta')
