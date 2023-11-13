@@ -81,7 +81,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#power-law-model" id="toc-power-law-model" class="nav-link active" data-scroll-target="#power-law-model">Power Law Model</a>
+  <li><a href="#the-data" id="toc-the-data" class="nav-link active" data-scroll-target="#the-data">The Data</a>
+  <ul>
+  <li><a href="#the-zeros-issue" id="toc-the-zeros-issue" class="nav-link" data-scroll-target="#the-zeros-issue">The zeros issue</a></li>
+  </ul></li>
+  <li><a href="#power-law-model" id="toc-power-law-model" class="nav-link" data-scroll-target="#power-law-model">Power Law Model</a>
   <ul>
   <li><a href="#plots-of-power-law-model-fit" id="toc-plots-of-power-law-model-fit" class="nav-link" data-scroll-target="#plots-of-power-law-model-fit">Plots of Power Law Model Fit</a>
   <ul>
@@ -162,6 +166,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<section id="the-data" class="level1">
+<h1>The Data</h1>
+<p>We have data collected from the Comprehensive R Archive Network (CRAN) about the different relationships R packages have with each other. There are 4 different types of relationship:</p>
+<ul>
+<li><p>Imports</p></li>
+<li><p>Depends</p></li>
+<li><p>Linking To</p></li>
+<li><p>Suggests</p></li>
+</ul>
+<p>We are only really interested in first two relationships. The data we will be investigating are the in-degrees of the network formed by these relationships. That is the number of other packages that either depend on or import each package.</p>
+<section id="the-zeros-issue" class="level2">
+<h2 class="anchored" data-anchor-id="the-zeros-issue">The zeros issue</h2>
+<p>This data contains a massive amount of zeros, so much so that they have a large influence over the models to follow. So, since the zeros are mostly uninteresting, we will remove them and only investigate the non-zero data.</p>
+</section>
+</section>
 <section id="power-law-model" class="level1">
 <h1>Power Law Model</h1>
 <p>We first consider modelling our data using the zeta distribution, which has probability mass function (p.m.f)</p>
@@ -181,7 +200,7 @@ L(\boldsymbol{x}) = \zeta(\alpha+1)^{-N}\prod_{i=1}^N x_i^{-(\alpha+1)}
 <p><span class="math display">\[
 \ell(\boldsymbol{x}) = -N\log\zeta(\alpha+1) - (\alpha+1)\sum_{i=1}^N\log x_i
 \]</span></p>
-<p>We now aim to fit this model using a bayesian approach, which means we need to decide on a prior for <span class="math inline">\(\alpha\)</span>. Since its value is restricted to being positive we choose to use a Gamma prior, that is:</p>
+<p>We now aim to fit this model using a Bayesian approach, which means we need to decide on a prior for <span class="math inline">\(\alpha\)</span>. Since its value is restricted to being positive we choose to use a Gamma prior, that is:</p>
 <p><span class="math display">\[
 \alpha \sim Ga(\gamma,\delta), \qquad \gamma,\delta &gt; 0
 \]</span></p>
@@ -230,7 +249,8 @@ f(x) =
 \phi_u\left\{\left(1+\frac{\xi(x-u-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi (x-u)}{\sigma_u}\right)_+^{-1/\xi}\right\}&amp;,x&gt;u
 \end{cases}
 \]</span></p>
-<p>And the cumulative mass function is given by:</p>
+<p>For <span class="math inline">\(\alpha&gt;0,\xi\in\mathbb{R},\sigma_u&gt;0\)</span> with <span class="math inline">\(\xi=0\)</span> taken as the limit.</p>
+<p>The cumulative mass function is given by:</p>
 <p><span class="math display">\[
 F(x) = \begin{cases}
 (1-\phi_u)\frac{\zeta(\alpha+1)-\zeta(\alpha+1,x+1)}{\zeta(\alpha+1)-\zeta(\alpha+1,u+1)}&amp;,x\leq u\\
@@ -251,7 +271,7 @@ L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n}[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)
 \]</span></p>
 <p>and,</p>
 <p><span class="math display">\[
-\ell(\boldsymbol{x}) = n\log(1-\phi_u) + (N-n)\log\phi_u-n\log[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)] -(\alpha+1)\sum_{i:x_i\leq u}\log x_i + \sum_{i:x_i&gt;u}\log\left\{\left(1+\frac{\xi(x_i-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi x_i}{\sigma_u}\right)_+^{-1/\xi}\right\}
+\ell(\boldsymbol{x}) = n\log(1-\phi_u) + (N-n)\log\phi_u-n\log[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)] -(\alpha+1)\sum_{i:x_i\leq u}\log x_i + \sum_{i:x_i&gt;u}\log\left\{\left(1+\frac{\xi(x_i-u-1)}{\sigma_u}\right)_+^{-1/\xi} - \left(1+\frac{\xi (x_i-u)}{\sigma_u}\right)_+^{-1/\xi}\right\}
 \]</span></p>
 <p>Since we wish to use this to construct a Metropolis-Hastings algorithm we again need some priors for the values of the parameters. The priors we use are listed below.</p>
 <p><span class="math display">\[
@@ -259,6 +279,7 @@ L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n}[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)
 \xi \sim N(0,s^2),\\
 \sigma_u \sim Ga(v,w)
 \]</span></p>
+<p>For <span class="math inline">\(c,d,s,v,w&gt;0\)</span></p>
 <p>Our joint prior distribution is defined as follows:</p>
 <span class="math display">\[\begin{align}
 \pi(\alpha,\xi,\sigma_u) &amp;= \pi(\alpha)\pi(\xi)\pi(\sigma_u)\\
@@ -314,7 +335,7 @@ L(\boldsymbol{x}) = (1-\phi_u)^n\phi_u^{N-n}[\zeta(\alpha+1)-\zeta(\alpha+1,u+1)
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>n.iter<span class="ot">=</span><span class="fl">1e4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The models below were obtained using hyperparameters:</p>
+<p>The models below were obtained using hyper parameters:</p>
 <p><span class="math display">\[
 c=1,d=0.01,s=3,v=1,w=0.01
 \]</span></p>
@@ -404,7 +425,7 @@ f(x) =
 \phi_u\zeta(\beta+1,u+1)^{-1}x^{-(\beta+1)}&amp;,x&gt;u
 \end{cases}
 \]</span></p>
-<p>Where <span class="math inline">\(\alpha,\beta &gt;0\)</span> and <span class="math inline">\(\phi_u \in (0,1)\)</span> is the excedance probability, and <span class="math inline">\(\zeta(s,t) = \sum_{k=t}^\infty k^{-s}\)</span> is the Hurwitz zeta function. From now on, we will use <span class="math inline">\(\zeta_{t-1}(s)\)</span> to denote the Hurwitz zeta function with paramters <span class="math inline">\(s\)</span> and <span class="math inline">\(t\)</span> .</p>
+<p>Where <span class="math inline">\(\alpha,\beta &gt;0\)</span> and <span class="math inline">\(\phi_u \in (0,1)\)</span> is the exceedance probability, and <span class="math inline">\(\zeta(s,t) = \sum_{k=t}^\infty k^{-s}\)</span> is the Hurwitz zeta function. From now on, we will use <span class="math inline">\(\zeta_{t-1}(s)\)</span> to denote the Hurwitz zeta function with parameters <span class="math inline">\(s\)</span> and <span class="math inline">\(t\)</span> .</p>
 <p>This makes the survival function of this model:</p>
 <p><span class="math display">\[
 S(x) =

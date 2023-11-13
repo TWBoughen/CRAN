@@ -292,8 +292,8 @@
       
       par(mfrow=c(1,1))
     }
-    fast.zigpd.mcmc = function(n.iter,dat,threshold){
-      mcmc.out.full = zigpd.mcmc(n.iter,phi=sum(dat>u)/length(dat),dat,threshold,c(3,2,5),list(alpha=c(1,0.01),shape=3,scale=c(1,0.01)))
+    fast.zigpd.mcmc = function(n.iter,dat,threshold,H=100){
+      mcmc.out.full = zigpd.mcmc(n.iter,phi=sum(dat>u)/length(dat),dat,threshold,c(3,2,5),list(alpha=c(1,0.01),shape=3,scale=c(1,0.01)),H=H)
       return(mcmc.out.full)
     }
   }

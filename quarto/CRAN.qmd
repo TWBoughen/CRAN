@@ -18,6 +18,24 @@ df0 = df-1
 
 ```
 
+# The Data
+
+We have data collected from the Comprehensive R Archive Network (CRAN) about the different relationships R packages have with each other. There are 4 different types of relationship:
+
+-   Imports
+
+-   Depends
+
+-   Linking To
+
+-   Suggests
+
+We are only really interested in first two relationships. The data we will be investigating are the in-degrees of the network formed by these relationships. That is the number of other packages that either depend on or import each package.
+
+## The zeros issue
+
+This data contains a massive amount of zeros, so much so that they have a large influence over the models to follow. So, since the zeros are mostly uninteresting, we will remove them and only investigate the non-zero data.
+
 # Power Law Model
 
 We first consider modelling our data using the zeta distribution, which has probability mass function (p.m.f)
@@ -93,7 +111,7 @@ zeta.imports0.out = zeta.mcmc(1e4,df0$imports[df0$imports>0],2,c(4,4))
 
 # Power Law-IGPD Model
 
-Since the power law model seems to not fit very well, we now aim to fit a new model to the data that may fit better. This model treats the data as a power law below a certain threshold but above it the data is modeled using the integer-valued generalised Pareto distribution (IGPD). The p.m.f of this model is
+Since the power law model seems to not fit very well, we now aim to fit a new model to the data that may fit better. This model treats the data as a power law below a certain threshold $u$ but above it the data is modeled using the integer-valued generalised Pareto distribution (IGPD). The p.m.f of this model is
 
 $$
 f(x) =
@@ -103,7 +121,9 @@ f(x) =
 \end{cases}
 $$
 
-And the cumulative mass function is given by:
+For $\alpha>0,\xi\in\mathbb{R},\sigma_u>0$ with $\xi=0$ taken as the limit.
+
+The cumulative mass function is given by:
 
 $$
 F(x) = \begin{cases}
@@ -142,6 +162,8 @@ $$
 \sigma_u \sim Ga(v,w)
 $$
 
+For $c,d,s,v,w>0$
+
 Our joint prior distribution is defined as follows:
 
 ```{=tex}
@@ -159,7 +181,6 @@ And we have that
 \log\pi(\sigma_u) &= v\log w - \log\Gamma(v) + (v-1)\log\sigma_u - w\sigma_u
 \end{align}
 ```
-
 ## Method for fitting
 
 In order to fit this model we will be using a Bayesian approach, estimating the parameters using a Metropolis-Hastings algorithm with an adaptive proposal distribution, the method is fully described below:
