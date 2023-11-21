@@ -140,7 +140,7 @@ pl_igp.mcmc = function(n.iter, init, par_cov.init, X, prior.pars, u.type='c', di
   acc.states = data.frame(u=init$u, alpha=init$alpha, shape=init$shape, scale=init$scale)
   U = 0:100
   for(i in 1:n.iter+1){
-    message('iter: ',i,'| accepted: ',nrow(acc.states), '| scale: ',round(mean(acc.states$u)))
+    message('iter: ',i,'| accepted: ',nrow(acc.states), '| u: ',round(mean(acc.states$u)))
     #proposal steps
     if(u.type=='c'){
       if(nrow(acc.states)>H){
@@ -187,7 +187,7 @@ pl_igp.mcmc = function(n.iter, init, par_cov.init, X, prior.pars, u.type='c', di
 
 
 # -------------------------------------------------------------------------
-U = 0:(length(dat)-1)
+U = 0:100
 alpha=1.2
 shape=0.9
 scale=20
@@ -203,12 +203,12 @@ init = list(
   shape=1,
   scale=10
 )
-u.type='d'
+u.type='c'
 dist.type=2
 par_cov.init = matrix(diag(rep(0.01,4)),nrow=4)
 
 mcmc.out = pl_igp.mcmc(2e4,init, par_cov.init, dat, prior.pars, u.type, dist.type, H=200)
-plot(mcmc.out$alpha,type='l')
+aplot(mcmc.out$alpha,type='l')
 plot(mcmc.out$shape,type='l')
 plot(mcmc.out$scale,type='l')
 hist(mcmc.out$u)

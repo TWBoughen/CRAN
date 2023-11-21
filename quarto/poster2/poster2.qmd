@@ -1,0 +1,20 @@
+---
+title: A look at modelling of network degree distributions
+format:
+  poster-typst: 
+    size: "36x24"
+    verical: true
+    poster-authors: "T. W. Boughen"
+    departments: "Department of Mathematics, Statistics & Physics"
+    institution-logo: "./images/ncstate.png"
+    footer-text: "posit::conf 2023"
+    footer-url: "https://posit.co/conference/"
+    footer-emails: "abc@example.com"
+    footer-color: "ebcfb2"
+---
+## Section 1
+:::{.block fill="luma(230)" width=50%}
+This is a gray block that is half a page wide
+
+:::
+
