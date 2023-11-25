@@ -328,12 +328,8 @@ plot(ecdf2(sim.dat), log='xy')
 # -------------------------------------------------------------------------
 
 
-p2p.in = sim.dat
+p2p.in = p2p[p2p>2]-2
 
-U = 0:100
-alpha=1.2
-shape=0.9
-scale=20
 prior.pars = list(
   u=list(N=length(dat), shape=1, rate=0.01), 
   alpha=list(shape=1, rate=0.01), 
@@ -341,14 +337,14 @@ prior.pars = list(
   scale=list(shape=1,rate=0.01)
 )
 init = list(
-  u=20,
-  alpha=2,
-  shape=10,
-  scale=15
+  u=10,
+  alpha=0.5,
+  shape=15,
+  scale=10
 )
 u.type='c'
 dist.type=1
-par_cov.init = matrix(diag(c(rep(0.1,3),10)),nrow=4)
+par_cov.init = matrix(diag(c(rep(0.05,3),0.04)),nrow=4)
 
 mcmc.out = pl_igp.mcmc(1e5,init, par_cov.init, p2p.in, prior.pars, u.type, dist.type, H=2e3)
 plot(mcmc.out$alpha,type='l')
