@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.506">
+<meta name="generator" content="quarto-1.3.433">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -64,7 +64,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<div class="quarto-title-meta column-page-right">
+<div class="quarto-title-meta">
 
     <div>
     <div class="quarto-title-meta-heading">Author</div>
@@ -78,9 +78,7 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
-
 </header>
-
 
 <p>The power law often arises as a way to model the degree distribution of networks as they are assumed to be a result of a preferential attachment model that is claimed to have degree that follow the power law. However, this is only true for the bulk of the data and collapses in a lot of cases at the right tail. Here, we show the inadequacy of the power law for modelling the right tails of several data sets and introduce a new model that intends to be more accurate. This model is a mixture of a power law and a discretised variation of the Generalised Pareto distribution from extreme value theory; making it a natural distribution to try to use. One downside is the increase in the number of parameter from just one with the power law to four with this new mixture model. To see if this increase is necessary we compare it to a model that is the mixture of two power laws, that while it still has more parameters than the single power law , it does not have as many as the power law IGP mixture.</p>
 <section id="the-models" class="level1">
@@ -100,14 +98,37 @@ f(x) = \frac{x^{-(\alpha+1)}}{\zeta(\alpha+1)},\qquad x=1,2,\ldots
 </section>
 <section id="cumulative-mass-function-and-survival" class="level3">
 <h3 class="anchored" data-anchor-id="cumulative-mass-function-and-survival">Cumulative Mass Function and Survival</h3>
-<p>First we define the Hurwitz Zeta function to be :</p>
+<p>Now we can find that the survival function of this model is:</p>
 <p><span class="math display">\[
-\zeta_t(s) = \zeta(s,t+1) = \sum_{i=t+1}^\infty k^{-s}
+S(x) = 1-\frac{\sum_{k=1}^\infty k^{-(\alpha+1)}}{\zeta(\alpha+1)}, \qquad x=1,2,\ldots
+\]</span></p>
+</section>
+<section id="likelihood" class="level3">
+<h3 class="anchored" data-anchor-id="likelihood">Likelihood</h3>
+<p>For a set of data <span class="math inline">\(\boldsymbol{x} = (x_1, x_2, \ldots,x_N)^T\)</span>, where each <span class="math inline">\(x_i\)</span> independently follows this model, we can calculate the likelihood to be:</p>
+<p><span class="math display">\[
+L(\boldsymbol{x}) = \zeta(\alpha+1)^{-N}\prod_{i=1}^Nx_i^{-(\alpha+1)}
 \]</span></p>
 </section>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-
+<p>For this model we look to use methods from extreme value theory to model the right hand tail of the data. If we were in a continuous setting and we wanted to use a threshold model then we would likely consider using the Generalised Pareto distribution, however the degrees of nodes in a network are discrete in nature. So, we define the Integrated Generalised Pareto distribution.</p>
+<section id="integrated-generalised-pareto-distribution" class="level3">
+<h3 class="anchored" data-anchor-id="integrated-generalised-pareto-distribution">Integrated Generalised Pareto Distribution</h3>
+<p>The Generalised Pareto distribution with threshold <span class="math inline">\(u\in \mathbb{R}^+\)</span> has the survival function:</p>
+<p><span class="math display">\[
+G_u(h) = \left(1+\frac{\xi(h-u)}{\sigma_u}\right)^{-1/\xi}, \qquad h&gt;u
+\]</span></p>
+<p>where <span class="math inline">\(u,\sigma_u \in \mathbb{R}^+\)</span> and <span class="math inline">\(\xi\in\mathbb{R}\)</span>.</p>
+<p>For this model we consider the distribution of <span class="math inline">\(\lceil H\rceil\)</span> and <span class="math inline">\(\lfloor H\rfloor\)</span>, where <span class="math inline">\(H|H&gt;u\sim GP_u(\sigma_u, \xi)\)</span>. We consider both cases individually, referring to the former as type 1 and the latter as type 2.</p>
+<section id="type-1" class="level4">
+<h4 class="anchored" data-anchor-id="type-1">Type 1</h4>
+<span class="math display">\[\begin{align}
+\Pr(X=x|X&gt;u) &amp;= \Pr(H&gt;x-1|H&gt;\lfloor u \rfloor) - \Pr(H&gt;x|H&gt;\lfloor u \rfloor)\\
+&amp;=\left(1+\frac{\xi(x-\lfloor u \rfloor-1)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi} -\left(1+\frac{\xi(x-\lfloor u \rfloor)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi}
+\end{align}\]</span>
+</section>
+</section>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 
@@ -136,11 +157,7 @@ f(x) = \frac{x^{-(\alpha+1)}}{\zeta(\alpha+1)},\qquad x=1,2,\ldots
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="degmodelling_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -156,11 +173,7 @@ f(x) = \frac{x^{-(\alpha+1)}}{\zeta(\alpha+1)},\qquad x=1,2,\ldots
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="degmodelling_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -175,16 +188,12 @@ f(x) = \frac{x^{-(\alpha+1)}}{\zeta(\alpha+1)},\qquad x=1,2,\ldots
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  1.000   1.000   1.000   2.975   3.000 155.000 </code></pre>
+  1.000   1.000   1.000   3.016   3.000 221.000 </code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="degmodelling_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -201,11 +210,7 @@ f(x) = \frac{x^{-(\alpha+1)}}{\zeta(\alpha+1)},\qquad x=1,2,\ldots
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="degmodelling_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -295,9 +300,10 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+  function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,
+      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -307,17 +313,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start',
+      placement: 'bottom-start'
     };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -330,135 +327,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
-          }
-        }
-        typesetMath(container);
-        return container.innerHTML
-      } else {
-        typesetMath(note);
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      typesetMath(note);
-      return note.innerHTML;
-    }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
-          }
-        } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
-          .then(res => res.text())
-          .then(html => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
-            if (note !== null) {
-              const html = processXRef(id, note);
-              instance.setContent(html);
-            } 
-          }).finally(() => {
-            instance.enable();
-            instance.show();
-          });
-        }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -502,7 +370,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
-            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -528,32 +395,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -614,7 +455,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-
 
 
 

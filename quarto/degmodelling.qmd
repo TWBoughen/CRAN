@@ -33,26 +33,56 @@ This appears as a straight line on a log-log plot.
 
 ### Cumulative Mass Function and Survival
 
-First we define the Hurwitz Zeta function to be :
+Now we can find that the survival function of this model is:
 
 $$
-\zeta_t(s) = \zeta(s,t+1) = \sum_{i=t+1}^\infty k^{-s}
+S(x) = 1-\frac{\sum_{k=1}^\infty k^{-(\alpha+1)}}{\zeta(\alpha+1)}, \qquad x=1,2,\ldots
+$$
+
+### Likelihood
+
+For a set of data $\boldsymbol{x} = (x_1, x_2, \ldots,x_N)^T$, where each $x_i$ independently follows this model, we can calculate the likelihood to be:
+
+$$
+L(\boldsymbol{x}) = \zeta(\alpha+1)^{-N}\prod_{i=1}^Nx_i^{-(\alpha+1)}
 $$
 
 ## Power Law - Integrated Generalised Pareto
+
+For this model we look to use methods from extreme value theory to model the right hand tail of the data. If we were in a continuous setting and we wanted to use a threshold model then we would likely consider using the Generalised Pareto distribution, however the degrees of nodes in a network are discrete in nature. So, we define the Integrated Generalised Pareto distribution.
+
+### Integrated Generalised Pareto Distribution
+
+The Generalised Pareto distribution with threshold $u\in \mathbb{R}^+$ has the survival function:
+
+$$
+G_u(h) = \left(1+\frac{\xi(h-u)}{\sigma_u}\right)^{-1/\xi}, \qquad h>u
+$$
+
+where $u,\sigma_u \in \mathbb{R}^+$ and $\xi\in\mathbb{R}$.
+
+For this model we consider the distribution of $\lceil H\rceil$ and $\lfloor H\rfloor$, where $H|H>u\sim GP_u(\sigma_u, \xi)$. We consider both cases individually, referring to the former as type 1 and the latter as type 2.
+
+#### Type 1
+
+```{=tex}
+\begin{align}
+\Pr(X=x|X>u) &= \Pr(H>x-1|H>\lfloor u \rfloor) - \Pr(H>x|H>\lfloor u \rfloor)\\
+&=\left(1+\frac{\xi(x-\lfloor u \rfloor-1)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi} -\left(1+\frac{\xi(x-\lfloor u \rfloor)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi}
+\end{align}
+```
 
 ## Power Law Mixture
 :::
 
 ```{r,message=F, warning=F, echo=FALSE}
-library(networkdata)
 source('../scripts/functions.R')
 ```
 
 # The data
 
 ::: panel-tabset
-## CRAN 
+## CRAN
 
 ```{r, echo=F, message=F}
 cran = load_data('rpkg_20190129.csv')
