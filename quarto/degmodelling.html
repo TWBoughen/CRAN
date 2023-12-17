@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.4.506">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -50,6 +50,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#the-models" id="toc-the-models" class="nav-link active" data-scroll-target="#the-models">The models</a></li>
   <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The data</a></li>
+  <li><a href="#the-fits" id="toc-the-fits" class="nav-link" data-scroll-target="#the-fits">The fits</a></li>
   </ul>
 </nav>
 </div>
@@ -64,7 +65,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page-right">
 
     <div>
     <div class="quarto-title-meta-heading">Author</div>
@@ -78,13 +79,15 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
+
 
 <p>The power law often arises as a way to model the degree distribution of networks as they are assumed to be a result of a preferential attachment model that is claimed to have degree that follow the power law. However, this is only true for the bulk of the data and collapses in a lot of cases at the right tail. Here, we show the inadequacy of the power law for modelling the right tails of several data sets and introduce a new model that intends to be more accurate. This model is a mixture of a power law and a discretised variation of the Generalised Pareto distribution from extreme value theory; making it a natural distribution to try to use. One downside is the increase in the number of parameter from just one with the power law to four with this new mixture model. To see if this increase is necessary we compare it to a model that is the mixture of two power laws, that while it still has more parameters than the single power law , it does not have as many as the power law IGP mixture.</p>
 <section id="the-models" class="level1">
 <h1>The models</h1>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Power Law</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Power Law - Integrated Generalised Pareto</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Power Law Mixture</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Power Law</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Power Law - Integrated Generalised Pareto</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <section id="probability-mass-function" class="level3">
@@ -120,18 +123,66 @@ L(\boldsymbol{x}) = \zeta(\alpha+1)^{-N}\prod_{i=1}^Nx_i^{-(\alpha+1)}
 G_u(h) = \left(1+\frac{\xi(h-u)}{\sigma_u}\right)^{-1/\xi}, \qquad h&gt;u
 \]</span></p>
 <p>where <span class="math inline">\(u,\sigma_u \in \mathbb{R}^+\)</span> and <span class="math inline">\(\xi\in\mathbb{R}\)</span>.</p>
-<p>For this model we consider the distribution of <span class="math inline">\(\lceil H\rceil\)</span> and <span class="math inline">\(\lfloor H\rfloor\)</span>, where <span class="math inline">\(H|H&gt;u\sim GP_u(\sigma_u, \xi)\)</span>. We consider both cases individually, referring to the former as type 1 and the latter as type 2.</p>
-<section id="type-1" class="level4">
-<h4 class="anchored" data-anchor-id="type-1">Type 1</h4>
+<p>For this model we consider the distribution of <span class="math inline">\(X=\lceil H\rceil\)</span> and <span class="math inline">\(X=\lfloor H\rfloor\)</span>, where <span class="math inline">\(H|H&gt;u\sim GP_u(\sigma_u, \xi)\)</span>. We consider both cases individually, referring to the former as the ‘ceiling version’ and the latter as the ‘floor version’.</p>
+<section id="ceiling-version" class="level4">
+<h4 class="anchored" data-anchor-id="ceiling-version">Ceiling Version</h4>
 <span class="math display">\[\begin{align}
 \Pr(X=x|X&gt;u) &amp;= \Pr(H&gt;x-1|H&gt;\lfloor u \rfloor) - \Pr(H&gt;x|H&gt;\lfloor u \rfloor)\\
-&amp;=\left(1+\frac{\xi(x-\lfloor u \rfloor-1)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi} -\left(1+\frac{\xi(x-\lfloor u \rfloor)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi}
+&amp;=\left(1+\frac{\xi(x-\lfloor u \rfloor-1)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi} -\left(1+\frac{\xi(x-\lfloor u \rfloor)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi}\\
+&amp;=G_{\lfloor u \rfloor}(x) - G_{\lfloor u \rfloor}(x+1)
+\end{align}\]</span>
+</section>
+<section id="floor-version" class="level4">
+<h4 class="anchored" data-anchor-id="floor-version">Floor Version</h4>
+<span class="math display">\[\begin{align}
+\Pr(X=x|X&gt;u) &amp;= \Pr(H&gt;x-1|H&gt;\lceil u \rceil) - \Pr(H&gt;x|H&gt;\lceil u \rceil)\\
+&amp;=\left(1+\frac{\xi(x-\lceil u \rceil-1)}{\sigma_{\lceil u \rceil}}\right)^{-1/\xi} -\left(1+\frac{\xi(x-\lceil u \rceil)}{\sigma_{\lceil u \rceil}}\right)^{-1/\xi}\\
+&amp;=G_{\lceil u \rceil}(x-1) - G_{\lceil u \rceil}(x)
 \end{align}\]</span>
 </section>
 </section>
-</div>
-<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<section id="unified-probability-mass-function" class="level3">
+<h3 class="anchored" data-anchor-id="unified-probability-mass-function">Unified Probability Mass Function</h3>
+<p>We can unify the two PMFs into one function:</p>
+<p><span class="math display">\[
+h(x) = G_v(x-1-(v-\lceil u\rceil)) - G_v(x-(v-\lceil u \rceil )), \qquad x=v+1,v+2,\dots
+\]</span></p>
+<p>where <span class="math inline">\(v =\lfloor u \rfloor\)</span> obtains the ceiling version and <span class="math inline">\(v=\lceil u \rceil\)</span> obtains the floor version.</p>
+</section>
+<section id="the-mixture" class="level3">
+<h3 class="anchored" data-anchor-id="the-mixture">The Mixture</h3>
+<p>We define the mixture model as the combination of the Truncated Zeta distribution and the Integrated Generalised Pareto distribution with weight <span class="math inline">\(\phi\)</span> representing the probability that a data point is above the threshold <span class="math inline">\(v\)</span>. The PMF of this model is below:</p>
+<p><span class="math display">\[
+f(x) = \begin{cases}
+(1-\phi)\frac{x^{-(\alpha+1)}}{\sum_{k=1}^v k^{-(\alpha+1)}},&amp;x=1,2,\dots,v \\
+\phi\left[\left(1+\frac{\xi(x-1-(v-\lceil u\rceil)-v)}{\sigma_0 + \xi v}\right)_+^{-1/\xi} - \left(1+\frac{\xi(x-(v-\lceil u\rceil)-v)}{\sigma_0 + \xi v}\right)_+^{-1/\xi}  \right],&amp;x=v+1,v+2,\ldots
+\end{cases}
+\]</span> Where <span class="math inline">\(\phi \in(0,1)\)</span>, <span class="math inline">\(\alpha,\xi \in \mathbb{R}\)</span>, <span class="math inline">\(\sigma_0,u \in \mathbb{R^+}\)</span> , and <span class="math inline">\(v = \lfloor u \rfloor\)</span> or <span class="math inline">\(\lceil u \rceil\)</span>, and <span class="math inline">\(y_+ = \max(0,y)\)</span>.</p>
+</section>
+<section id="the-likelihood" class="level3">
+<h3 class="anchored" data-anchor-id="the-likelihood">The likelihood</h3>
+<p>For a set of data <span class="math inline">\(\boldsymbol{x} = (x_1, x_2, \ldots,x_N)^T\)</span> with <span class="math inline">\(n\)</span> data points below the threshold <span class="math inline">\(v\)</span> ,the likelihood for this mixture model is as below:</p>
+<p><span class="math display">\[
+L(\boldsymbol{x}) = \phi^{N-n}(1-\phi)^n \left(\sum_{k=1}^v k^{-(\alpha+1)}\right)^{-n} \prod_{i:x_i\le v} x_i^{-(\alpha+1)}\prod_{i:x_i&gt;v}h(x_i)
+\]</span></p>
+</section>
+<section id="bayesian-inference" class="level3">
+<h3 class="anchored" data-anchor-id="bayesian-inference">Bayesian Inference</h3>
+<p>We approach fitting this model with a Bayesian methodology using the likelihood above and the priors below:</p>
+<span class="math display">\[\begin{align}
+&amp;\alpha \sim N(0,\lambda_\alpha^2)&amp;\hat\phi \sim \text{Beta}(a,b)&amp; &amp; \sigma_0 \sim Ga(1,\lambda_\sigma)&amp;&amp;\xi\sim Ga(1,\lambda_\xi)
+\end{align}\]</span>
+<p>The prior of <span class="math inline">\(\hat\phi\)</span> acts as the prior for <span class="math inline">\(u\)</span> where <span class="math inline">\(\hat\phi\)</span> is the MLE of <span class="math inline">\(\phi\)</span> such that <span class="math inline">\(\hat\phi = \frac{N-n}{N}\)</span> . Also, note we have given <span class="math inline">\(\xi\)</span> a Gamma prior despite it technically having support on the entire real line, this is for practical purposes when using the Metropolis algorithm and we expect the value of <span class="math inline">\(\xi\)</span> to be positive.</p>
+<p>We construct the posterior distribution as:</p>
+<span class="math display">\[\begin{align}
+\pi(\alpha,\xi,\sigma_0, u | \boldsymbol{x}) &amp;\propto L(\boldsymbol{x})\pi(\alpha,\xi,\sigma_0, u) \\
+&amp;=(2\pi)^{-1/2}\lambda_\alpha^{-1}\lambda_\sigma \lambda_\xi B(a,b)^{-1} \hat\phi^{a+n-1} (1-\hat\phi)^{N+b-n-1}\\
+&amp;\left(\sum_{k=1}^v k^{-(\alpha+1)}\right)^{-n}\exp(-\xi\lambda_\xi - \sigma_0\lambda_\sigma - \frac{\alpha^2}{2\lambda_\alpha^2})\\
+&amp;\prod_{i:x_i\le v} x_i^{-(\alpha+1)} \prod_{i:x_i&gt;v}h(x_i)
 
+\end{align}\]</span>
+<p>This is not a known distribution and is not easily accessible, so we will be using a Metropolis-Hastings algorithm to draw samples of the parameters from the posterior. We describe the algorithm used below:</p>
+</section>
 </div>
 </div>
 </div>
@@ -157,7 +208,11 @@ G_u(h) = \left(1+\frac{\xi(h-u)}{\sigma_u}\right)^{-1/\xi}, \qquad h&gt;u
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="degmodelling_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -173,7 +228,11 @@ G_u(h) = \left(1+\frac{\xi(h-u)}{\sigma_u}\right)^{-1/\xi}, \qquad h&gt;u
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="degmodelling_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -188,12 +247,16 @@ G_u(h) = \left(1+\frac{\xi(h-u)}{\sigma_u}\right)^{-1/\xi}, \qquad h&gt;u
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  1.000   1.000   1.000   3.016   3.000 221.000 </code></pre>
+  1.000   1.000   2.000   3.007   3.000 249.000 </code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="degmodelling_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -210,10 +273,161 @@ G_u(h) = \left(1+\frac{\xi(h-u)}{\sigma_u}\right)^{-1/\xi}, \qquad h&gt;u
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="degmodelling_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
+</div>
+</div>
+</div>
+</section>
+<section id="the-fits" class="level1">
+<h1>The fits</h1>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">CRAN</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Barabasi Albert Simulated</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false" href="">Peer to Peer</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Imports</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Depends</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">PL</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">PL-IGP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false" href="">PL-PL</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This fit was achieved using 100 iterations and 17 values were accepted after the burn in period.</p>
+</div>
+<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">PL</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">PL-IGP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false" href="">PL-PL</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This fit was achieved using 100 iterations and 24 values were accepted after the burn in period.</p>
+</div>
+<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">PL</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">PL-IGP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false" href="">PL-PL</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This fit was achieved using 100 iterations and 21 values were accepted after the burn in period</p>
+</div>
+<div id="tabset-7-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-3-tab">
+
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-9-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-3-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">PL</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">PL-IGP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-3" role="tab" aria-controls="tabset-8-3" aria-selected="false" href="">PL-PL</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="degmodelling_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This fit was achieved using 100 iterations and 6 values were accepted after the burn in period.</p>
+</div>
+<div id="tabset-8-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-3-tab">
+
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -300,10 +514,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -313,8 +526,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -327,6 +549,135 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    const typesetMath = (el) => {
+      if (window.MathJax) {
+        // MathJax Typeset
+        window.MathJax.typeset([el]);
+      } else if (window.katex) {
+        // KaTeX Render
+        var mathElements = el.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            window.katex.render(texText.data, mathElements[i], {
+              displayMode: mathElements[i].classList.contains('display'),
+              throwOnError: false,
+              macros: macros,
+              fleqn: false
+            });
+          }
+        }
+      }
+    }
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        typesetMath(container);
+        return container.innerHTML
+      } else {
+        typesetMath(note);
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      typesetMath(note);
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -370,6 +721,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -395,6 +747,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -455,6 +833,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 

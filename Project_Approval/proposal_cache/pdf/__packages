@@ -1,0 +1,15 @@
+igraph
+evd
+nlme
+mgcv
+ismev
+Lmoments
+distillery
+extRemes
+VGAM
+gsl
+MASS
+ggplot2
+gridExtra
+networkdata
+mvtnorm

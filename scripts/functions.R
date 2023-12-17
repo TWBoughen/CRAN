@@ -88,11 +88,11 @@
         return(exp(-length(X)*log(gsl::zeta(alpha+1)) - (alpha+1)*sum(log(X))))
       }
     }
-    alpha.prior = function(alpha,pars,log=T){
+    alpha.prior0 = function(alpha,pars,log=T){
       return(dgamma(alpha,shape=pars[1],rate=pars[2],log=log))
     }
     zeta.posterior = function(X,alpha,alpha.pars){
-      return(lzeta(X,alpha)+alpha.prior(alpha,alpha.pars))
+      return(lzeta(X,alpha)+alpha.prior0(alpha,alpha.pars))
     }
     zeta.mcmc = function(n.iter,data,alpha.init,alpha.pars,prop.var.init=0.01,H=200,show=T){
       results = numeric(n.iter+1)
@@ -188,14 +188,14 @@
                sum(log(pgpd(X.igp-u,scale=scale,shape=shape)- pgpd(X.igp-u-1,shape = shape,scale=scale))))
     }
     
-    shape.prior = function(shape,pars,log=T){
+    shape.prior0 = function(shape,pars,log=T){
       return(dnorm(shape,mean=0,sd=pars[1],log=log))
     }
-    scale.prior = function(scale,pars,log=T){
+    scale.prior0 = function(scale,pars,log=T){
       return(dgamma(scale,shape=pars[1], rate=pars[2],log=log))
     }
     zigpd.prior = function(alpha,shape,scale,alpha.pars,shape.pars,scale.pars){
-      return(alpha.prior(alpha,alpha.pars) + shape.prior(shape,shape.pars) + scale.prior(scale,scale.pars))
+      return(alpha.prior0(alpha,alpha.pars) + shape.prior0(shape,shape.pars) + scale.prior0(scale,scale.pars))
     }
     zigpd.posterior = function(X,phi,alpha,u,shape,scale,alpha.pars,shape.pars,scale.pars){
       return(lzigpd(X,phi,alpha,u,shape,scale) + zigpd.prior(alpha,shape,scale,alpha.pars,shape.pars,scale.pars))
@@ -261,15 +261,15 @@
       a=seq(0.01,2*par.upper[1],length.out=1e5)
       
       plot(density(mcmc.out[-(1:(0.2*nrow(mcmc.out))),1]), type='l',xlab='alpha',main='')
-      lines(a,alpha.prior(a,pri.pars$alpha,log=F), lty=2)
+      lines(a,alpha.prior0(a,pri.pars$alpha,log=F), lty=2)
       legend('topright',legend=c('Prior','Posterior'),lty=c(2,1))
       s = seq(par.lower[2]-1,par.upper[2]+1,length.out=1e5)
       plot(density(mcmc.out[-(1:(0.2*nrow(mcmc.out))),2]), type='l',xlab='shape',main='')
-      lines(s,shape.prior(s,pri.pars$shape,log=F), lty=2)
+      lines(s,shape.prior0(s,pri.pars$shape,log=F), lty=2)
       
       s = seq(par.lower[3]/2,par.upper[3]*2,length.out=1e5)
       plot(density(mcmc.out[-(1:(0.2*nrow(mcmc.out))),3]), type='l',xlab='scale',main='')
-      lines(s,scale.prior(s,pri.pars$scale,log=F), lty=2)
+      lines(s,scale.prior0(s,pri.pars$scale,log=F), lty=2)
       
       
       
@@ -332,7 +332,7 @@
   }
   
   zc.pos = function(X,phi,u,alpha,beta,pri.pars){
-    return(lzc(X,phi,u,alpha,beta) + alpha.prior(alpha,pri.pars$alpha) + alpha.prior(beta,pri.pars$alpha))
+    return(lzc(X,phi,u,alpha,beta) + alpha.prior0(alpha,pri.pars$alpha) + alpha.prior0(beta,pri.pars$alpha))
   }
   
   zc.mcmc = function(n.iter,dat,phi,u,init,pri.pars,prop.cov = diag(c(0.01,0.01)),H=200){
@@ -381,7 +381,7 @@
   }
   
   alpha_beta_prior = function(a,b,pri.pars){
-    return(alpha.prior(a,pri.pars,log=F)*alpha.prior(b,pri.pars,log=F))
+    return(alpha.prior0(a,pri.pars,log=F)*alpha.prior0(b,pri.pars,log=F))
   }
   
   plot_zc_mcmc <- function(mcmc.out, pri.pars, dat, phi, u,burn.in = 0.2*nrow(mcmc.out)) {
@@ -403,12 +403,12 @@
     contour(a,a,pri.dens,add=T,lty=2,nlevels=15)
     par(mar=c(0,0,0,0))
     plot(density(mcmc.out[-(1:burn.in),]$alpha),main='',ylab='',xlab = 'alpha',xlim=xlim,xaxt='n',yaxt='n')
-    lines(a,alpha.prior(a,pri.pars$alpha,log=F),lty=2)
+    lines(a,alpha.prior0(a,pri.pars$alpha,log=F),lty=2)
     legend('topright',legend=c('Prior','Posterior'),lty=c(2,1))
     b.dens = density(mcmc.out[-(1:burn.in),]$beta)
     par(mar=c(4,0,0,0))
     plot(b.dens$y,b.dens$x,type='l',xlim=c(max(b.dens$y),0),ylim=ylim,xaxt='n',xlab='',ylab='beta')
-    lines(alpha.prior(a,pri.pars$alpha,log=F),a,lty=2)
+    lines(alpha.prior0(a,pri.pars$alpha,log=F),a,lty=2)
     
     par(mfrow=c(1,1),mar=c(3,3,3,3))
     
@@ -434,6 +434,326 @@
   }
   
 }
+
+
+
+
+
+# new functions -----------------------------------------------------------
+
+
+#distribution functions
+dpl_igp = function(x,u,phi,alpha,shape,scale,type=1 ,log=T){
+  if(length(x)>1){
+    return(dpl_igp.vec(x,u,phi,alpha,shape,scale,type,log))
+  }
+  if(type==1){
+    u=floor(u)
+  }else{
+    u=ceiling(u)
+  }
+  if(x<=0){
+    out=-Inf
+  }
+  if(x<=u & x>0){
+    out = log(1-phi) - (alpha+1)*log(x) - log(gsl::zeta(alpha+1)-gsl::hzeta(alpha+1, u+1))
+  }
+  if(x>u){
+    out = log(phi) + log(pgpd(x-u,scale=scale,shape=shape) - pgpd(x-u-1,scale=scale,shape=shape))
+  }
+  if(!log){
+    out=exp(out)
+  }
+  return(out)
+}
+dpl_igp.vec = Vectorize(dpl_igp,vectorize.args = 'x')
+ppl_igp = function(q,u,phi,alpha,shape,scale,type=1,log=T,lower.tail=F){
+  if(length(q)>1){
+    return(ppl_igp.vec(q,u,phi,alpha,shape,scale,type,log,lower.tail))
+  }
+  if(type==1){
+    u=floor(u)
+  }else{
+    u=ceiling(u)
+  }
+  if(q<=0){
+    out = 1
+  }
+  if(q<=u & q>0){
+    out = log(1 - (1-phi)* (gsl::zeta(alpha+1)-gsl::hzeta(alpha+1, q+1)) / (gsl::zeta(alpha+1)-gsl::hzeta(alpha+1, u+1)) )
+  }
+  if(q>u){
+    out = log(phi) + log(pgpd(q-u,scale=scale,shape=shape,lower.tail=F ))
+  }
+  if(lower.tail){
+    out=1-out
+  }
+  if(!log){
+    out=exp(out)
+  }
+  return(out)
+}
+ppl_igp.vec = Vectorize(ppl_igp,vectorize.args = 'q')
+
+llpl_igp = function(X,u,phi,alpha,shape,scale,type=1){
+  if(type==1){
+    u=floor(u)
+  }else{
+    u=ceiling(u)
+  }
+  n = sum(X<=u)
+  if(n==length(X)){
+    return(n*log(1-phi) - n*log(gsl::zeta(alpha+1)-gsl::hzeta(alpha+1,u+1)) - (alpha+1)*sum(log(X)))
+  }
+  if(n==0){
+    return(length(X)*log(phi) + sum(log(pgpd(X-u,scale=scale,shape=shape) - pgpd(X-u-1,scale=scale,shape=shape))))
+  }
+  N=length(X)
+  X.pl = X[X<=u]
+  X.igp = X[X>u]
+  return(n*log(1-phi) - n*log(gsl::zeta(alpha+1)-gsl::hzeta(alpha+1,u+1)) -(alpha+1)*sum(log(X.pl)) +
+           (N-n)*log(phi) + sum(log(pgpd(X.igp-u,scale=scale,shape=shape) - pgpd(X.igp-u-1,scale=scale,shape=shape))))
+  
+}
+
+##priors
+u_prior = function(u,type='c',log=T,...){
+  args = list(...)
+  if(type=='c'){
+    out = dgamma(u,args$shape,rate = args$rate,log=log)
+  }else if(type=='d'){
+    out = -log(args$N)
+    if(!log){
+      return(exp(out))
+    }
+    return(out)
+  }
+}
+alpha.prior = function(alpha,log=T,...){
+  args = list(...)
+  # print(class(alpha))
+  return(dgamma(alpha,args$shape,rate=args$rate, log=log))
+}
+shape.prior = function(shape,S,log=T){
+  return(dnorm(shape,mean=0,sd=S,log=log))
+}
+scale.prior = function(scale,log=T,...){
+  args = list(...)
+  return(dgamma(scale,args$shape,rate=args$rate))
+}
+
+#joint prior
+pl_igp.prior = function(u,alpha,shape,scale,pars,u.type='c',log=T){
+  
+  out = u_prior(u,type=u.type,log=T,N=pars$u$N,shape=pars$u$shape,rate=pars$u$rate)+
+    alpha.prior(alpha,log=T,shape=pars$alpha$shape,rate=pars$alpha$rate)+
+    scale.prior(scale,log=T,shape=pars$scale$shape,rate=pars$scale$rate)+
+    shape.prior(shape,log=T,S=pars$shape$S)
+  if(!log){
+    out=exp(out)
+  }
+  return(out)
+}
+
+###posterior
+
+pl_igp.posterior = function(X,u,alpha,shape,scale,prior.pars,u.type='c',dist.type=1,log=T){
+  out = pl_igp.prior(u,alpha,shape,scale,prior.pars,u.type,log=T)+
+    llpl_igp(X,u,sum(X>u)/length(X),alpha,shape,scale,dist.type)
+  if(!log){
+    out=exp(out)
+  }
+  return(out)
+}
+pl_igp.posterior.u = Vectorize(pl_igp.posterior, vectorize.args = 'u')
+pl_igp.posterior.u.scaled = function(X,u,alpha,shape,scale,prior.pars,u.type='c',dist.type=1){
+  log_dens = pl_igp.posterior.u(X,u,alpha,shape,scale,prior.pars,u.type,dist.type)
+  return(exp(log_dens-max(log_dens)))
+}
+
+#next, the mcmcs 
+pl_igp.mcmc = function(n.iter, init, par_cov.init, X, prior.pars, u.type='c', dist.type=1,H=200, fix.u = NULL, burn.in=0.4, show=T){
+  if(!is.null(fix.u)){
+    init$u = fix.u
+  }
+  acc.states = data.frame(u=init$u, alpha=init$alpha, shape=init$shape, scale=init$scale)
+  U = 0:20
+  for(i in 1:n.iter+1){
+    message('iter: ',i,'| accepted: ',nrow(acc.states), '| u: ',round(tail(acc.states$u,1),2))
+    #proposal steps
+    if(u.type=='c'){
+      if(nrow(acc.states)>H){
+        Sig.i = 2.38^2 / 4 * cov(tail(acc.states,H))
+      }else{
+        Sig.i = par_cov.init
+      }
+      state.prop = rmvn(1,mu=tail(acc.states,1), Sig.i)
+    }else if(u.type=='d'){
+      weights = pl_igp.posterior.u.scaled(X,U,tail(acc.states,1)[2][[1]],tail(acc.states,1)[3][[1]],tail(acc.states,1)[4][[1]],prior.pars,u.type='c',dist.type=1)
+      u.prop = sample(U,1,prob=weights)
+      if(nrow(acc.states)>H){
+        Sig.i = 2.38^2 / 3 * cov(tail(acc.states,H)[,-1])
+      }else{
+        Sig.i = par_cov.init[-1,-1]
+      }
+      rest.prop = rmvn(1,mu=tail(acc.states,1)[-1], Sig.i)
+      state.prop = c(u.prop, rest.prop)
+    }
+    if(!is.null(fix.u)){
+      state.prop[1] = fix.u
+    }
+    #preliminary rejection
+    if(any(state.prop[-3]<0)){
+      next
+    }
+    #calculting log-acc prob
+    A = min(0, pl_igp.posterior(X,state.prop[1], state.prop[2], state.prop[3],state.prop[4],prior.pars,u.type,dist.type)-
+              pl_igp.posterior(X,tail(acc.states,1)[1][[1]],tail(acc.states,1)[2][[1]],tail(acc.states,1)[3][[1]],tail(acc.states,1)[4][[1]],prior.pars,u.type,dist.type))
+    if(is.nan(A)){
+      
+      break
+    }
+    #accepting / rejecting
+    if(log(runif(1))<A){
+      acc.states[nrow(acc.states)+1, ] = state.prop
+      next
+    }else{
+      next
+    }
+  }
+  acc.states = tail(acc.states, (1-burn.in)*nrow(acc.states))
+  if(show){
+    plot.mcmc.pl_igp(acc.states, prior.pars, u.type, X, dist.type)
+  }
+  return(acc.states)
+}
+
+plot.mcmc.pl_igp <- function(mcmc.out.burned, prior.pars, u.type, p2p.in, dist.type) {
+  layout.mat = t(matrix(c(1,2,3,4,
+                          5,5,6,6,
+                          5,5,6,6), nrow=4))
+  
+  L = layout(layout.mat)
+  par(mar = c(0,2,2,2))
+  k=seq(range(mcmc.out.burned$alpha)[1]*0.75,range(mcmc.out.burned$alpha)[2]*1.25, length.out=1e3)
+  pri.dens = alpha.prior(k,log=F,shape=prior.pars$alpha$shape, rate = prior.pars$alpha$rate)
+  post.dens = density(mcmc.out.burned$alpha)
+  plot(post.dens, ylim=c(0,max(c(pri.dens, post.dens$y))), xlab='',main='alpha')
+  lines(k,pri.dens,lty=2)
+  
+  par(mar = c(0,0,2,2))
+  k=seq(range(mcmc.out.burned$shape)[1]*0.75,range(mcmc.out.burned$shape)[2]*1.25, length.out=1e3)
+  pri.dens = shape.prior(k,log=F,S=prior.pars$shape$S)
+  post.dens = density(mcmc.out.burned$shape)
+  plot(post.dens, ylim=c(0,max(c(pri.dens, post.dens$y))),main='shape', xlab='', ylab='')
+  lines(k,pri.dens,lty=2)
+  
+  k=seq(range(mcmc.out.burned$scale)[1]*0.75,range(mcmc.out.burned$scale)[2]*1.25, length.out=1e3)
+  pri.dens = scale.prior(k,log=F,shape=prior.pars$scale$shape, rate=prior.pars$scale$rate)
+  post.dens = density(mcmc.out.burned$scale)
+  plot(post.dens, ylim=c(0,max(c(pri.dens, post.dens$y))),main='scale', xlab='', ylab='')
+  lines(k,pri.dens,lty=2)
+  par(mar = c(0,0,2,0))
+  k=seq(range(mcmc.out.burned$u)[1]*0.75,range(mcmc.out.burned$u)[2]*1.25, length.out=1e3)
+  pri.dens = u_prior(k,type=u.type,log=F,N=prior.pars$u$N,shape=prior.pars$u$shape,rate=prior.pars$u$rate)
+  post.dens = density(mcmc.out.burned$u)
+  plot(post.dens, ylim=c(0,max(c(pri.dens, post.dens$y))),main='threshold', xlab='', ylab='')
+  lines(k,pri.dens,lty=2)
+  polygon(c(max(p2p.in),max(post.dens$x)*1.25,max(post.dens$x)*1.25,max(p2p.in)),c(-1,-1,max(post.dens$y)*1.25,max(post.dens$y)*1.25), density=5)
+  
+  q = sort(unique(p2p.in), decreasing = F)
+  # q=1:max(p2p.in)
+  
+  means = apply(mcmc.out.burned, 2, mean)
+  meds = apply(mcmc.out.burned,2,median)
+  
+  post.vec = numeric(nrow(mcmc.out.burned))
+  for(i in 1:length(post.vec)){
+    post.vec[i] = pl_igp.posterior(p2p.in,mcmc.out.burned[i,1],mcmc.out.burned[i,2], mcmc.out.burned[i,3],mcmc.out.burned[i,4],prior.pars,u.type,dist.type)
+  }
+  #survival#######################################################################
+  dens.vec.df = data.frame(matrix(nrow=nrow(mcmc.out.burned), ncol=length(q)))
+  for(i in 1:nrow(mcmc.out.burned)){
+    message(i)
+    dens.vec.df[i,] = pzigpd(q,sum(p2p.in>mcmc.out.burned[i,1])/length(p2p.in), mcmc.out.burned[i,2] ,mcmc.out.burned[i,1],mcmc.out.burned[i,3],mcmc.out.burned[i,4])
+  }
+  
+  dens.vec.df[is.na(dens.vec.df)]=0
+  dens.mean = apply(dens.vec.df, 2, mean)
+  dens.upper95 = apply(dens.vec.df, 2, quantile, probs=0.975)
+  dens.lower95 = apply(dens.vec.df, 2, quantile, probs=0.025)
+  dens.upper99 = apply(dens.vec.df, 2, quantile, probs=0.995)
+  dens.lower99 = apply(dens.vec.df, 2, quantile, probs=0.005)
+  
+  par(mar=c(4,4,2,0))
+  plot(ecdf2(p2p.in), log='xy', type='l', col='red', lwd =1, ylab='S(x)')
+  polygon(c(q,rev(q)), c(dens.upper95,rev(dens.lower95)), col=rgb(0.6, 0.6, 0.7,0.2), border=NA, lty=2)
+  polygon(c(q,rev(q)), c(dens.upper99,rev(dens.lower99)), col=rgb(0.6, 0.6, 0.7,0.2), border=NA, lty=2)
+  lines(ecdf2(p2p.in)$x, ecdf2(p2p.in)$p, col='red', lwd =1)
+  legend('bottomleft', legend = 'Empirical survival', col='red', lty=1, lwd=1)
+  #pmf############################################################################
+  dens.vec.df = data.frame(matrix(nrow=nrow(mcmc.out.burned), ncol=length(q)))
+  for(i in 1:nrow(mcmc.out.burned)){
+    message(i)
+    dens.vec.df[i,] = dzigpd(q,sum(p2p.in>mcmc.out.burned[i,1])/length(p2p.in), mcmc.out.burned[i,2] ,mcmc.out.burned[i,1],mcmc.out.burned[i,3],mcmc.out.burned[i,4])
+  }
+  
+  dens.vec.df[is.na(dens.vec.df)]=0
+  dens.mean = apply(dens.vec.df, 2, mean)
+  dens.upper95 = apply(dens.vec.df, 2, quantile, probs=0.975)
+  dens.lower95 = apply(dens.vec.df, 2, quantile, probs=0.025)
+  dens.upper99 = apply(dens.vec.df, 2, quantile, probs=0.995)
+  dens.lower99 = apply(dens.vec.df, 2, quantile, probs=0.005)
+  
+  par(mar=c(4,4,2,0))
+  plot(epdf2(p2p.in), log='xy', col='red', ylab='f(x)', pch=19, cex = 0.5)
+  polygon(c(q,rev(q)), c(dens.upper95,rev(dens.lower95)), col=rgb(0.6, 0.6, 0.7,0.2), border=NA, lty=2)
+  polygon(c(q,rev(q)), c(dens.upper99,rev(dens.lower99)), col=rgb(0.6, 0.6, 0.7,0.2), border=NA, lty=2)
+  
+  
+  par(mfrow=c(1,1))
+}
+
+
+rpl_igp = function(n,alpha,phi,threshold,shape,scale, deg_max = 2e3){
+  if(n==1){
+    u=runif(1)
+    if(u>=phi){
+      k=1:threshold
+      probs = k^-(alpha+1) / (gsl::zeta(alpha+1) - gsl::hzeta(alpha+1, threshold+1))
+      x = sample(k,1, prob=probs)
+      return(x)
+    }
+    k = (threshold+1) : deg_max
+    probs = pgpd(k-threshold, shape=shape, scale=scale) - pgpd(k-threshold-1, shape=shape, scale=scale)
+    x = sample(k,1,prob=probs)
+    return(x)
+  }else{
+    return(replicate(n,rpl_igp(1,alpha,phi,threshold,shape,scale,deg_max)))
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

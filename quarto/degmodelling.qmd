@@ -61,18 +61,78 @@ $$
 
 where $u,\sigma_u \in \mathbb{R}^+$ and $\xi\in\mathbb{R}$.
 
-For this model we consider the distribution of $\lceil H\rceil$ and $\lfloor H\rfloor$, where $H|H>u\sim GP_u(\sigma_u, \xi)$. We consider both cases individually, referring to the former as type 1 and the latter as type 2.
+For this model we consider the distribution of $X=\lceil H\rceil$ and $X=\lfloor H\rfloor$, where $H|H>u\sim GP_u(\sigma_u, \xi)$. We consider both cases individually, referring to the former as the 'ceiling version' and the latter as the 'floor version'.
 
-#### Type 1
+#### Ceiling Version
 
 ```{=tex}
 \begin{align}
 \Pr(X=x|X>u) &= \Pr(H>x-1|H>\lfloor u \rfloor) - \Pr(H>x|H>\lfloor u \rfloor)\\
-&=\left(1+\frac{\xi(x-\lfloor u \rfloor-1)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi} -\left(1+\frac{\xi(x-\lfloor u \rfloor)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi}
+&=\left(1+\frac{\xi(x-\lfloor u \rfloor-1)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi} -\left(1+\frac{\xi(x-\lfloor u \rfloor)}{\sigma_{\lfloor u \rfloor}}\right)^{-1/\xi}\\
+&=G_{\lfloor u \rfloor}(x) - G_{\lfloor u \rfloor}(x+1)
 \end{align}
 ```
+#### Floor Version
 
-## Power Law Mixture
+```{=tex}
+\begin{align}
+\Pr(X=x|X>u) &= \Pr(H>x-1|H>\lceil u \rceil) - \Pr(H>x|H>\lceil u \rceil)\\
+&=\left(1+\frac{\xi(x-\lceil u \rceil-1)}{\sigma_{\lceil u \rceil}}\right)^{-1/\xi} -\left(1+\frac{\xi(x-\lceil u \rceil)}{\sigma_{\lceil u \rceil}}\right)^{-1/\xi}\\
+&=G_{\lceil u \rceil}(x-1) - G_{\lceil u \rceil}(x)
+\end{align}
+```
+### Unified Probability Mass Function
+
+We can unify the two PMFs into one function:
+
+$$
+h(x) = G_v(x-1-(v-\lceil u\rceil)) - G_v(x-(v-\lceil u \rceil )), \qquad x=v+1,v+2,\dots 
+$$
+
+where $v =\lfloor u \rfloor$ obtains the ceiling version and $v=\lceil u \rceil$ obtains the floor version.
+
+### The Mixture
+
+We define the mixture model as the combination of the Truncated Zeta distribution and the Integrated Generalised Pareto distribution with weight $\phi$ representing the probability that a data point is above the threshold $v$. The PMF of this model is below:
+
+$$
+f(x) = \begin{cases}
+(1-\phi)\frac{x^{-(\alpha+1)}}{\sum_{k=1}^v k^{-(\alpha+1)}},&x=1,2,\dots,v \\
+\phi\left[\left(1+\frac{\xi(x-1-(v-\lceil u\rceil)-v)}{\sigma_0 + \xi v}\right)_+^{-1/\xi} - \left(1+\frac{\xi(x-(v-\lceil u\rceil)-v)}{\sigma_0 + \xi v}\right)_+^{-1/\xi}  \right],&x=v+1,v+2,\ldots
+\end{cases}
+$$ Where $\phi \in(0,1)$, $\alpha,\xi \in \mathbb{R}$, $\sigma_0,u \in \mathbb{R^+}$ , and $v = \lfloor u \rfloor$ or $\lceil u \rceil$, and $y_+ = \max(0,y)$.
+
+### The likelihood
+
+For a set of data $\boldsymbol{x} = (x_1, x_2, \ldots,x_N)^T$ with $n$ data points at or below the threshold $v$ ,the likelihood for this mixture model is as below:
+
+$$
+L(\boldsymbol{x}) = \phi^{N-n}(1-\phi)^n \left(\sum_{k=1}^v k^{-(\alpha+1)}\right)^{-n} \prod_{i:x_i\le v} x_i^{-(\alpha+1)}\prod_{i:x_i>v}h(x_i)
+$$
+
+### Bayesian Inference
+
+We approach fitting this model with a Bayesian methodology using the likelihood above and the priors below:
+
+```{=tex}
+\begin{align}
+&\alpha \sim N(0,\lambda_\alpha^2)&\hat\phi \sim \text{Beta}(a,b)& & \sigma_0 \sim Ga(1,\lambda_\sigma)&&\xi\sim Ga(1,\lambda_\xi)
+\end{align}
+```
+The prior of $\hat\phi$ acts as the prior for $u$ where $\hat\phi$ is the MLE of $\phi$ such that $\hat\phi = \frac{N-n}{N}$ . Also, note we have given $\xi$ a Gamma prior despite it technically having support on the entire real line, this is for practical purposes when using the Metropolis algorithm and we expect the value of $\xi$ to be positive.
+
+We construct the posterior distribution as:
+
+```{=tex}
+\begin{align}
+\pi(\alpha,\xi,\sigma_0, u | \boldsymbol{x}) &\propto L(\boldsymbol{x})\pi(\alpha,\xi,\sigma_0, u) \\
+&=(2\pi)^{-1/2}\lambda_\alpha^{-1}\lambda_\sigma \lambda_\xi B(a,b)^{-1} \hat\phi^{a+n-1} (1-\hat\phi)^{N+b-n-1}\\
+&\left(\sum_{k=1}^v k^{-(\alpha+1)}\right)^{-n}\exp(-\xi\lambda_\xi - \sigma_0\lambda_\sigma - \frac{\alpha^2}{2\lambda_\alpha^2})\\
+&\prod_{i:x_i\le v} x_i^{-(\alpha+1)} \prod_{i:x_i>v}h(x_i)
+
+\end{align}
+```
+This is not a known distribution and is not easily accessible, so we will be using a Metropolis-Hastings algorithm to draw samples of the parameters from the posterior. We describe the algorithm used below:
 :::
 
 ```{r,message=F, warning=F, echo=FALSE}
@@ -163,4 +223,180 @@ par(mfrow=c(1,2))
 plot(epdf2(p2p), log='xy')
 plot(ecdf2(p2p), log='xy', type='l')
 ```
+:::
+
+# The fits
+
+```{r}
+
+```
+
+::: panel-tabset
+## CRAN
+
+::: panel-tabset
+## Imports
+
+::: panel-tabset
+## PL
+
+```{r,echo=F, message=F, warning=F}
+cran.imports.pl.mcmc = zeta.mcmc(1e4, cran.imports, 2,c(4,4))
+
+```
+
+## PL-IGP
+
+```{r, echo=F,message=FALSE, warning=F}
+prior.pars = list(
+  u=list(N=length(cran.imports), shape=1, rate=0.01), 
+  alpha=list(shape=1, rate=0.01), 
+  shape=list(S=50,v=16),
+  scale=list(shape=1,rate=0.01)
+)
+init = list(
+  u=120,
+  alpha=0.5,
+  shape=1,
+  scale=4
+)
+u.type='c'
+dist.type=1
+par_cov.init = matrix(diag(c(1,rep(0.05,2),1)),nrow=4)
+n.iter=1e2
+burn.in=0.4
+
+cran.imports.pligp.mcmc =  pl_igp.mcmc(n.iter,init, par_cov.init, cran.imports, prior.pars, u.type, dist.type,H=round(0.2*burn.in*n.iter),fix.u=NULL,burn.in=burn.in)
+n.acc = nrow(cran.imports.pligp.mcmc)
+```
+
+This fit was achieved using `r n.iter` iterations and `r n.acc` values were accepted after the burn in period.
+
+## PL-PL
+:::
+
+## Depends
+
+::: panel-tabset
+## PL
+
+```{r,echo=F, message=F, warning=F}
+cran.depends.pl.mcmc = zeta.mcmc(1e4, cran.depends, 2,c(4,4))
+```
+
+## PL-IGP
+
+```{r, echo=F,message=FALSE, warning=F}
+prior.pars = list(
+  u=list(N=length(cran.depends), shape=1, rate=0.01), 
+  alpha=list(shape=1, rate=0.01), 
+  shape=list(S=50,v=16),
+  scale=list(shape=1,rate=0.01)
+)
+init = list(
+  u=100,
+  alpha=0.5,
+  shape=1,
+  scale=4
+)
+u.type='c'
+dist.type=1
+par_cov.init = matrix(diag(c(1,rep(0.05,2),1)),nrow=4)
+n.iter=1e2
+burn.in=0.4
+
+cran.depends.pligp.mcmc =  pl_igp.mcmc(n.iter,init, par_cov.init, cran.depends, prior.pars, u.type, dist.type, H=round(burn.in*n.iter/5),fix.u=NULL,burn.in=burn.in)
+n.acc = nrow(cran.depends.pligp.mcmc)
+
+```
+
+This fit was achieved using `r n.iter` iterations and `r n.acc` values were accepted after the burn in period.
+
+## PL-PL
+:::
+:::
+
+## Barabasi Albert Simulated
+
+::: panel-tabset
+## PL
+
+```{r,echo=F, message=F, warning=F}
+ba.pl.mcmc = zeta.mcmc(1e4, ba.dat, 2,c(4,4))
+```
+
+## PL-IGP
+
+```{r, echo=F,message=FALSE, warning=F}
+prior.pars = list(
+  u=list(N=length(ba.dat), shape=1, rate=0.01), 
+  alpha=list(shape=1, rate=0.01), 
+  shape=list(S=50,v=16),
+  scale=list(shape=1,rate=0.01)
+)
+init = list(
+  u=30,
+  alpha=0.5,
+  shape=1,
+  scale=4
+)
+u.type='c'
+dist.type=1
+par_cov.init = matrix(diag(c(1,rep(0.05,2),1)),nrow=4)
+n.iter=1e2
+burn.in=0.4
+
+ba.pligp.mcmc =  pl_igp.mcmc(n.iter,init, par_cov.init, ba.dat, prior.pars, u.type, dist.type, H=round(burn.in*n.iter/5),fix.u=NULL,burn.in=burn.in)
+n.acc = nrow(ba.pligp.mcmc)
+
+
+```
+
+This fit was achieved using `r n.iter` iterations and `r n.acc` values were accepted after the burn in period
+
+## PL-PL
+:::
+
+## Peer to Peer
+
+::: panel-tabset
+## PL
+
+```{r,echo=F, message=F, warning=F}
+p2p.pl.mcmc = zeta.mcmc(1e4, p2p, 2,c(4,4))
+
+```
+
+## PL-IGP
+
+```{r, echo=F,message=FALSE, warning=F}
+prior.pars = list(
+  u=list(N=length(p2p), shape=1, rate=0.01), 
+  alpha=list(shape=1, rate=0.01), 
+  shape=list(S=50,v=16),
+  scale=list(shape=1,rate=0.01)
+)
+init = list(
+  u=20,
+  alpha=0.5,
+  shape=0,
+  scale=20
+)
+u.type='c'
+dist.type=1
+par_cov.init = matrix(diag(c(1,rep(0.05,2),1)),nrow=4)
+n.iter=1e2
+burn.in=0.4
+
+
+p2p.pligp.mcmc =  pl_igp.mcmc(n.iter,init, par_cov.init, p2p, prior.pars, u.type, dist.type, H=round(burn.in*n.iter/5),fix.u=NULL,burn.in=burn.in)
+n.acc = nrow(p2p.pligp.mcmc)
+
+
+```
+
+This fit was achieved using `r n.iter` iterations and `r n.acc` values were accepted after the burn in period.
+
+## PL-PL
+:::
 :::
