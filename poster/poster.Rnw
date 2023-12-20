@@ -48,6 +48,7 @@
 }
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
   \pagestyle{empty}
   \fontfamily{phv}\selectfont

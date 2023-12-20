@@ -3,7 +3,7 @@ title: "Scale-freeness and Growth Stability of Realistic Network Models"
 subtitle: "Project Approval"
 author: "Thomas Boughen"
 title-block-banner: true
-title-block-style: manuscript
+title-block-style: plain
 format: 
   titlepage-pdf: 
     number-sections: true
@@ -35,7 +35,7 @@ knitr::opts_chunk$set(fig.pos = 'H')
 ```
 
 ```{r, echo=F, warning=F, message=F}
-load('compile_data.RData')
+# load('compile_data.RData')
 source('../scripts/functions.R')
 source('../scripts/new_functions.R')
 library(networkdata)
@@ -120,6 +120,7 @@ This model generates a network with an approximate power law degree distribution
 sim.surv = plot.surv(sim)
 marrangeGrob(list(sim.surv), nrow=1, ncol=1, top='')
 ```
+
 This does look quite similar to some of the plots in @fig-survs like the CRAN data and protein interactions, but looks very different to the some of the others.
 
 According to recent works [@Broido_2019; @Voitalov_2019] real networks have more nuanced degree distributions and the power law, while suitable for the bulk of the data, is inadequate for the full set of degrees. This is especially clear in the right tail and, to a lesser extent, the left tail. Despite this, methods from extreme value theory remain underutilised even though they seem well suited to the problem of modelling the tails of the degree distribution.
@@ -146,11 +147,9 @@ where $\zeta(\alpha+1) = \sum_{k=1}^\infty k^{-(\alpha+1)}$ is the Riemann Zeta 
 
 A good visual tool for judging the fit of the model is the survival function which we define below:
 
-
 $$
 S(x) = 1 - \frac{\sum_{k=1}^x k^{-(\alpha+1)}}{\zeta(\alpha+1)}, \qquad x=1,2,\ldots
-$$ 
-
+$$
 
 #### Bayesian Inferenece for the Power Law model
 
@@ -209,7 +208,7 @@ We now continue to calculate the posterior distribution:
 %
 \end{align*}
 ```
-We fit this model for the same sets of data as we did for the previous models and the results are show next in @sec-wsf. 
+We fit this model for the same sets of data as we did for the previous models and the results are show next in @sec-wsf.
 
 ### Power Law IGP Mixture Model {#sec-pli}
 
@@ -217,8 +216,7 @@ To define this model (PL-IGP) we will first need to look at a traditional way of
 
 $$
 \Pr(Y>y|Y>u) = \left(1+\frac{\xi(y-u)}{\sigma}\right)_+^{-1/\xi}, \qquad y>u
-$$
-where $a_+ = \max(0,a)$.
+$$ where $a_+ = \max(0,a)$.
 
 However, this is only really appropriate to use for approximating the conditional distribution of the largest values of continuous random variables. So, we would like a similar distribution that can be used for discrete random variables.
 
@@ -226,7 +224,7 @@ However, this is only really appropriate to use for approximating the conditiona
 
 We follow roughly the same method as @Rohrbeck_2018, but they only consider modelling $Y=\lceil H\rceil$ we also consider the possibility of modelling $Y=\lfloor H\rfloor$ where $H$ is a continuous random variable with support on the positive real line such the $H|H>u \sim GPD(\sigma_0 + \xi u, \xi)$ for some $u\in \mathbb{R}^+$. Below we define the PMF of the IGPD for both cases.
 
-##### Ceiling Version: the case where $Y=\lceil H \rceil$ 
+##### Ceiling Version: the case where $Y=\lceil H \rceil$
 
 For values of $x = \lfloor u \rfloor , \lfloor u \rfloor +1, \ldots$ and $\xi\in\mathbb{R}$ and $u,\sigma\_0 \in \mathbb{R}^+$:
 
@@ -237,7 +235,7 @@ For values of $x = \lfloor u \rfloor , \lfloor u \rfloor +1, \ldots$ and $\xi\in
 %
 \end{align*}
 ```
-##### Floor Version: the case where $Y=\lfloor H \rfloor$ 
+##### Floor Version: the case where $Y=\lfloor H \rfloor$
 
 For values of $x = \lceil u \rceil , \lceil u \rceil +1, \ldots$ and $\xi\in\mathbb{R}$ and $u,\sigma_0 \in \mathbb{R}^+$:
 
@@ -288,7 +286,7 @@ Proceeding with the Bayesian approach, we decide on the following priors for the
 %
 \end{align*}
 ```
-Again, we are using fairly uninformative priors for the parameters. Using the same method of indirectly specifying a prior for $u$  through the prior of $\phi$ instead.
+Again, we are using fairly uninformative priors for the parameters. Using the same method of indirectly specifying a prior for $u$ through the prior of $\phi$ instead.
 
 With all of this we find the posterior distribution to be:
 
@@ -300,7 +298,6 @@ With all of this we find the posterior distribution to be:
 As before, the results of fitting this model to several data sets are found in @sec-wsf.
 
 <!-- This is a natural model to consider, as we are particularly interested in improving the fit of the power law model at the right tail and so extreme value theory seems to be a good place to start. However, this model may be needlessly complex with too many parameters so we next define the power law mixture model which has less parameters but may produce a similar improvement in fit at the right tail. -->
-
 
 ## Work So Far {#sec-wsf}
 
@@ -333,19 +330,16 @@ if("sim.pl.plot" %in% ls()){
   sim.pl.plot = pl.mcmc.plot(sim, sim.pl.mcmc$acc, burn.in=500, thin.by=5, top='BA')
 }
 
-
-
-marrangeGrob(
+pl.plots = marrangeGrob(
   list(
   tennis.pl.plot,
   harvard.pl.plot,
   protein.pl.plot,
   depends.pl.plot,
   sim.pl.plot),
-nrow=2,ncol = 3, top='')
+nrow=3,ncol = 2, top='')
 
-
-
+pl.plots
 
 ```
 
@@ -357,124 +351,24 @@ save(list=ls(), file='compile_data.RData')
 
 This mixture model defined in @sec-pli seems to perform significantly better for all of the data sets. Within each group of plots in @fig-pli, the posterior densities are shown for each of the parameters and then in the bottom left of each group is the 95% credible interval for the survival. While this model seems to fit these sets of data well, it may be needlessly complex and have more parameters than necessary. So, next we fit the model described in @sec-plpl.
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE,fig.width=20, fig.asp=0.67}
 #| label: fig-pli
 #| fig-cap: Plots of fitted survival functions and posterior densities for the parameters
-#| fig-subcap: ""
-#| layout-ncol: 3
 #| fig-pos: 'H'
-init = list(alpha=1, shape=1, scale=5, threshold=15)
-prior.params = list(phi = c(1,1), alpha=5,shape=10, scale=0.001)
-init.cov = list(alpha=0.1, shapescale=matrix(c(0.003,-0.0003,
-                                               -0.0003,1),ncol=2), threshold=0.5)
 
-
-if("sim.pli.plot" %in% ls()){
-  loaded=T
-}else{
-  tennis.pli.mcmc = pli.mcmc(1e5,tennis,init,prior.params,init.cov, cov.period = 1e7, type=1, show=F)
-tennis.pli.plot = plot.pli.mcmc(tennis,tennis.pli.mcmc$states, burn.in=1e3, thin.by = 0, top='Tennis')
-
-harvard.pli.mcmc = pli.mcmc(1e5,harvard,init,prior.params,init.cov, cov.period = 1e7, type=1, show=F)
-harvard.pli.plot = plot.pli.mcmc(harvard,harvard.pli.mcmc$states, burn.in=1e3, thin.by = 5, top='Harvard')
-
-protein.pli.mcmc = pli.mcmc(1e5,protein.dat,init,prior.params,init.cov, cov.period = 1e7, type=1, show=F)
-protein.pli.plot = plot.pli.mcmc(protein.dat,protein.pli.mcmc$states, burn.in=1e3, thin.by = 5, top='Protein')
-
-depends.pli.mcmc = pli.mcmc(1e5,depends,init,prior.params,init.cov, cov.period = 1e7, type=1, show=F)
-depends.pli.plot = plot.pli.mcmc(depends,depends.pli.mcmc$states, burn.in=1e3, thin.by = 5, top='CRAN')
-
-sim.pli.mcmc = pli.mcmc(1e5,sim,init,prior.params,init.cov, cov.period = 1e7, type=1, show=F)
-sim.pli.plot = plot.pli.mcmc(sim,sim.pli.mcmc$states, burn.in=1e3, thin.by = 5, top='BA')
-}
-save(list=ls(), file='compile_data.RData')
-
-# marrangeGrob(
-# list(tennis.pli.plot,
-# harvard.pli.plot,
-# protein.pli.plot,
-# depends.pli.plot,
-# sim.pli.plot),
-# nrow=2,ncol=3, top='')
-
-marrangeGrob(list(tennis.pli.plot),nrow=1,ncol = 1, top='')
- marrangeGrob( list(harvard.pli.plot),nrow=1,ncol = 1, top='')
- marrangeGrob( list(protein.pli.plot),nrow=1,ncol = 1, top='')
- marrangeGrob( list(depends.pli.plot),nrow=1,ncol = 1, top='')
- marrangeGrob( list(sim.pli.plot),nrow=1,ncol = 1, top='')
-
+pli.plot = readRDS('plotRDS/pli-plot.rds')
+pli.plot
 ```
 
 ### Power Law Mixture
 
 Looking at @fig-plpl, this model also seems to perform quite well for all of the sets of data. In the top left of each group of plots is a 2D density plot of the two different power law parameters, $\alpha$ and $\beta$. In the top right is a histogram of the value of $\lceil u\rceil$ and finally, in the bottom right is a plot of the empirical survival function with the posterior mean in red and 95% credible intervals for the survival. It is interesting to note that ,for the simulated data, the value of $\lceil u \rceil$ did not stray from the value of 3 indicating that using only one power law may be suitable which was expected. This also happens to be the minimum value that the code will allow the threshold to take since model selection has not been implemented.
 
-```{r, eval=TRUE, echo=FALSE}
+```{r, eval=TRUE, echo=FALSE,fig.width=20, fig.asp=0.67}
 #| label: fig-plpl
 #| fig-cap: Fitted survival functions and posterior densities of parameters
-#| fig-subcap: ""
-#| layout-ncol: 3
-init = list(alpha=1, beta=1, threshold=5)
-prior.params = list(alpha=0.01, beta=0.01, threshold = 0.01)
-cov.init = list(ab = diag(c(0.1,0.1)), threshold=0.5)
-
-if("sim.plpl.plot" %in% ls()){
-  loaded=T
-}else{
-  tennis.plpl.mcmc = plpl.mcmc(5e4, tennis,init ,
-                       prior.params,
-                       cov.init)
-
-tennis.plpl.plot  = plot.plpl.mcmc(tennis, tennis.plpl.mcmc, burn.in = 1e3, top='Tennis', thin.by=5)
-
-save(list=ls(), file='compile_data.RData')
-
-
-harvard.plpl.mcmc = plpl.mcmc(5e4, harvard,init ,
-                       prior.params,
-                       cov.init)
-
-harvard.plpl.plot  = plot.plpl.mcmc(harvard, harvard.plpl.mcmc, burn.in = 1e3, top='Harvard', thin.by=5)
-save(list=ls(), file='compile_data.RData')
-
-protein.plpl.mcmc = plpl.mcmc(5e4, protein.dat,init ,
-                       prior.params,
-                       cov.init)
-
-protein.plpl.plot  = plot.plpl.mcmc(protein.dat, protein.plpl.mcmc, burn.in = 1e3, top='Protein', thin.by=5)
-save(list=ls(), file='compile_data.RData')
-
-depends.plpl.mcmc = plpl.mcmc(5e4, depends,init ,
-                       prior.params,
-                       cov.init)
-
-depends.plpl.plot  = plot.plpl.mcmc(depends, depends.plpl.mcmc, burn.in = 1e3, top='CRAN', thin.by=5)
-save(list=ls(), file='compile_data.RData')
-
-sim.plpl.mcmc = plpl.mcmc(5e4, sim,init ,
-                       prior.params,
-                       cov.init)
-
-sim.plpl.plot  = plot.plpl.mcmc(sim, sim.plpl.mcmc, burn.in = 1e3,top='BA', thin.by=5)
-save(list=ls(), file='compile_data.RData')
-
-}
-save(list=ls(), file='compile_data.RData')
-# marrangeGrob(
-# list(
-# tennis.plpl.plot,
-# harvard.plpl.plot,
-# protein.plpl.plot,
-# depends.plpl.plot,
-# sim.plpl.plot),
-# nrow=2,ncol=3,top='')
-
-
-marrangeGrob(list(tennis.plpl.plot),nrow=1,ncol = 1, top='')
- marrangeGrob( list(harvard.plpl.plot),nrow=1,ncol = 1, top='')
- marrangeGrob( list(protein.plpl.plot),nrow=1,ncol = 1, top='')
- marrangeGrob( list(depends.plpl.plot),nrow=1,ncol = 1, top='')
- marrangeGrob( list(sim.plpl.plot),nrow=1,ncol = 1, top='')
+plpl.plot = readRDS('plotRDS/plpl-plot.rds')
+plpl.plot
 
 ```
 
@@ -485,32 +379,41 @@ So far we have shown that the power law is only adequate for certain sets of dat
 Upon further investigation and seeing how well these models fit to various sets of data, we will either decide to use one of them, or decide to look for an alternative model to use. Then we can begin moving along two directions, in one we look at tracking the changes in parameters of the chosen model over time for various real data sets as well as data simulated from the BA model. This informs what we do on the other, where we will be attempting to modify and/or extend the BA model so that the new model will provide a degree distribution that follows the chosen model and matches up with the changes in parameters over time for the data sets.
 
 {{< pagebreak >}}
+
 # Project Plan
 
 ### Review proofs of properties of the Barabási-Albert model {.unnumbered}
+
 This will involve mostly reading of the original papers detailing the properties of the BA model, with some attempt to recreate the proofs perhaps in a more mathematically rigorous fashion. This may also help in future when it comes to deriving the properties of the new model.
 
 ### Read required extreme value theory and network science materials {.unnumbered}
+
 This will also involve mostly reading of materials that will help in understanding the mathematics behind network generative models in addition to some extreme value theory that will be needed when it comes to properly defining the model we choose for degree distributions and its properties.
 
 ### Review previous modifications of the Barabási-Albert model {.unnumbered}
+
 Before we can attempt to make any modifications to the BA model, we will need to review what extensions/modifications have already been done.
 
 ### Come up with a suitable model for the degree distribution {.unnumbered}
+
 Building on the previous steps, this is where we will choose a model to use for the degree distribution so that we can begin making appropriate modifications to the BA model in the next steps.
 
 ### Create set of functions and/or R package to fit the model {.unnumbered}
+
 After coming up with a suitable model, we will require a way to fit it in a somewhat uninvolved process so that the model can be fit to many sets of data over many time frames.
 
 ### Monitor changes in model parameters for various real networks {.unnumbered}
+
 This will be an ongoing process throughout some of the other steps, all while using the results produced to inform how we carry out the other steps.
 
 ### Use these changes to inform modification of the BA model {.unnumbered}
+
 We will begin investigating possible modifications to the BA model that will produce a degree distribution that aligns with the chosen model and hopefully with the changes in the model parameters over time as the networks grow.
 
 ### Investigate properties of the new model {.unnumbered}
 
 Once a set of modifications has been made, we will then study the theoretical properties of networks that grow under the new model.
 
-{{< pagebreak >}}
+{{< pagebreak >}} 
+
 # References {.unnumbered}

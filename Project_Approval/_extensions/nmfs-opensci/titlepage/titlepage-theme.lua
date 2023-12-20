@@ -243,6 +243,7 @@ This function assigns the themevals to the meta data
           pandoc.MetaInlines{pandoc.RawInline("latex","\\titleblock")}, 
           pandoc.MetaInlines{pandoc.RawInline("latex","\\authorblock")},
           pandoc.MetaInlines{pandoc.RawInline("latex","\\vfill")},
+          pandoc.MetaInlines{pandoc.RawInline("latex","A report presented at the annual\\\\meeting on 10 August 2025\\\\ \\vspace{0.8cm}")},
           pandoc.MetaInlines{pandoc.RawInline("latex","\\logoblock")},
           pandoc.MetaInlines{pandoc.RawInline("latex","\\footerblock")}
           },

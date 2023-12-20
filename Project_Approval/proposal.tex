@@ -75,41 +75,35 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-% definitions for citeproc citations
-\NewDocumentCommand\citeproctext{}{}
-\NewDocumentCommand\citeproc{mm}{%
-  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
-\makeatletter
- % allow citations to break across lines
- \let\@cite@ofmt\@firstofone
- % avoid brackets around text for \cite:
- \def\@biblabel#1{}
- \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
-\makeatother
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
- {\begin{list}{}{%
-  \setlength{\itemindent}{0pt}
-  \setlength{\leftmargin}{0pt}
-  \setlength{\parsep}{0pt}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
   % turn on hanging indent if param 1 is 1
   \ifodd #1
-   \setlength{\leftmargin}{\cslhangindent}
-   \setlength{\itemindent}{-1\cslhangindent}
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
   \fi
   % set entry spacing
-  \setlength{\itemsep}{#2\baselineskip}}}
- {\end{list}}
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
 \usepackage{calc}
-\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \usepackage{float}
+\makeatletter
+\makeatother
+\makeatletter
+\makeatother
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -146,10 +140,18 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\makeatother
+\makeatletter
+\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \makeatother
 
 \usepackage{hyphenat}
@@ -342,9 +344,13 @@ Realistic Network Models}}}}\par
 \setcounter{page}{1}
 
 %%%%% end titlepage extension code
-\section{Research Proposal}\label{research-proposal}
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, enhanced, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, breakable]}{\end{tcolorbox}}\fi
 
-\subsection{Background}\label{sec-bg}
+\hypertarget{research-proposal}{%
+\section{Research Proposal}\label{research-proposal}}
+
+\hypertarget{sec-bg}{%
+\subsection{Background}\label{sec-bg}}
 
 Networks often arise when representing complex systems and the
 relationships between the components within them. Take a social network
@@ -369,15 +375,13 @@ one example of a network, others include:
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=0.9\textwidth,height=\textheight]{proposal_files/figure-pdf/fig-survs-1.pdf}
+{\centering \includegraphics[width=0.9\textwidth,height=\textheight]{proposal_files/figure-pdf/fig-survs-1.pdf}
 
 }
 
 \caption{\label{fig-survs}Survival function of the degrees}
 
-\end{figure}%
+\end{figure}
 
 The variety of fields across which networks appear make them a vital
 source of data to be able to analyse, there is particular interest in
@@ -395,7 +399,8 @@ who noted that the number of nodes in a network grows over time and that
 nodes tend to connect to the other nodes in the network with more
 connections (preferential attachment).
 
-\subsubsection{Barabási-Albert model}\label{barabuxe1si-albert-model}
+\hypertarget{barabuxe1si-albert-model}{%
+\subsubsection{Barabási-Albert model}\label{barabuxe1si-albert-model}}
 
 They proposed a minimal model called the Barabási-Albert model, also
 known as the BA model, which is defined below:
@@ -428,15 +433,13 @@ Figure~\ref{fig-surv-sim}.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=0.9\textwidth,height=\textheight]{proposal_files/figure-pdf/fig-surv-sim-1.pdf}
+{\centering \includegraphics[width=0.9\textwidth,height=\textheight]{proposal_files/figure-pdf/fig-surv-sim-1.pdf}
 
 }
 
 \caption{\label{fig-surv-sim}Survival function of the degrees}
 
-\end{figure}%
+\end{figure}
 
 This does look quite similar to some of the plots in
 Figure~\ref{fig-survs} like the CRAN data and protein interactions, but
@@ -450,7 +453,8 @@ lesser extent, the left tail. Despite this, methods from extreme value
 theory remain underutilised even though they seem well suited to the
 problem of modelling the tails of the degree distribution.
 
-\subsection{Aims}\label{aims}
+\hypertarget{aims}{%
+\subsection{Aims}\label{aims}}
 
 This brings us to the aims of this project, which is to firstly find a
 suitable model for the degree distribution of real networks using
@@ -468,12 +472,14 @@ studied, for example how close to following a power law is the networks
 degree distribution and how do the largest degrees in the network change
 over time.
 
-\subsection{Methodology}\label{methodology}
+\hypertarget{methodology}{%
+\subsection{Methodology}\label{methodology}}
 
 As mentioned in the previous subsection, we begin by trying to find a
 suitable model for the degree distribution of real networks.
 
-\subsubsection{Power Law Model}\label{sec-pl}
+\hypertarget{sec-pl}{%
+\subsubsection{Power Law Model}\label{sec-pl}}
 
 We first look at the power law distribution and fit it to the degree
 distributions of some real networks using a Bayesian approach.
@@ -495,8 +501,9 @@ function which we define below:
 S(x) = 1 - \frac{\sum_{k=1}^x k^{-(\alpha+1)}}{\zeta(\alpha+1)}, \qquad x=1,2,\ldots
 \]
 
+\hypertarget{bayesian-inferenece-for-the-power-law-model}{%
 \paragraph{Bayesian Inferenece for the Power Law
-model}\label{bayesian-inferenece-for-the-power-law-model}
+model}\label{bayesian-inferenece-for-the-power-law-model}}
 
 We aim to fit this model using a Bayesian approach and as such we need
 to define the likelihood for a set of degrees
@@ -504,7 +511,7 @@ to define the likelihood for a set of degrees
 auxilliary variables \(\boldsymbol{y} = (y_1, y_2, \ldots y_m)^T\) and
 \(\boldsymbol{c} = (c_1, c_2, \ldots,c_m)^T\) to be the unique values of
 \(x_i \in \boldsymbol{x}\) and the counts of these unique values in the
-vector \(\boldsymbol{x}\) respectively, also with the constraint that
+vector \(\boldsymbol{x}\) respectively, with the constraint that
 \(N = \sum_{i=1}^m c_i\). This is to align the formation of the
 likelihood with those of the coming models as it will lead to more
 efficient computations. That said, we now define the likelihood below:
@@ -522,7 +529,8 @@ posterior distribution of:
 \] The results of fitting this model to various data sets are shown in
 Section~\ref{sec-wsf}.
 
-\subsubsection{Power Law Mixture}\label{sec-plpl}
+\hypertarget{sec-plpl}{%
+\subsubsection{Power Law Mixture}\label{sec-plpl}}
 
 Before we can introduce the power law IGP mixture, we would like a model
 that we can use to benchmark it against. To that end, we look at a
@@ -553,8 +561,9 @@ S(x) = \begin{cases}
 \end{cases}
 \]
 
+\hypertarget{bayesian-inferenece-for-the-power-law-mixture-model}{%
 \paragraph{Bayesian Inferenece for the Power Law Mixture
-Model}\label{bayesian-inferenece-for-the-power-law-mixture-model}
+Model}\label{bayesian-inferenece-for-the-power-law-mixture-model}}
 
 We again calculate the likelihood using the auxiliary variables
 \(\boldsymbol{y}\) and \(\boldsymbol{c}\): \[
@@ -583,7 +592,8 @@ We now continue to calculate the posterior distribution:
 We fit this model for the same sets of data as we did for the previous
 models and the results are show next in Section~\ref{sec-wsf}.
 
-\subsubsection{Power Law IGP Mixture Model}\label{sec-pli}
+\hypertarget{sec-pli}{%
+\subsubsection{Power Law IGP Mixture Model}\label{sec-pli}}
 
 To define this model (PL-IGP) we will first need to look at a
 traditional way of modelling extreme values, more specifically
@@ -603,8 +613,9 @@ conditional distribution of the largest values of continuous random
 variables. So, we would like a similar distribution that can be used for
 discrete random variables.
 
+\hypertarget{integrated-generalised-pareto-distribution-igpd}{%
 \paragraph{Integrated Generalised Pareto Distribution
-(IGPD)}\label{integrated-generalised-pareto-distribution-igpd}
+(IGPD)}\label{integrated-generalised-pareto-distribution-igpd}}
 
 We follow roughly the same method as Rohrbeck et al. (2018), but they
 only consider modelling \(Y=\lceil H\rceil\) we also consider the
@@ -614,8 +625,9 @@ the \(H|H>u \sim GPD(\sigma_0 + \xi u, \xi)\) for some
 \(u\in \mathbb{R}^+\). Below we define the PMF of the IGPD for both
 cases.
 
+\hypertarget{ceiling-version-the-case-where-ylceil-h-rceil}{%
 \subparagraph{\texorpdfstring{Ceiling Version: the case where
-\(Y=\lceil H \rceil\)}{Ceiling Version: the case where Y=\textbackslash lceil H \textbackslash rceil}}\label{ceiling-version-the-case-where-ylceil-h-rceil}
+\(Y=\lceil H \rceil\)}{Ceiling Version: the case where Y=\textbackslash lceil H \textbackslash rceil}}\label{ceiling-version-the-case-where-ylceil-h-rceil}}
 
 For values of \(x = \lfloor u \rfloor , \lfloor u \rfloor +1, \ldots\)
 and \(\xi\in\mathbb{R}\) and \(u,\sigma\_0 \in \mathbb{R}^+\):
@@ -626,8 +638,9 @@ and \(\xi\in\mathbb{R}\) and \(u,\sigma\_0 \in \mathbb{R}^+\):
 %
 \end{align*}
 
+\hypertarget{floor-version-the-case-where-ylfloor-h-rfloor}{%
 \subparagraph{\texorpdfstring{Floor Version: the case where
-\(Y=\lfloor H \rfloor\)}{Floor Version: the case where Y=\textbackslash lfloor H \textbackslash rfloor}}\label{floor-version-the-case-where-ylfloor-h-rfloor}
+\(Y=\lfloor H \rfloor\)}{Floor Version: the case where Y=\textbackslash lfloor H \textbackslash rfloor}}\label{floor-version-the-case-where-ylfloor-h-rfloor}}
 
 For values of \(x = \lceil u \rceil , \lceil u \rceil +1, \ldots\) and
 \(\xi\in\mathbb{R}\) and \(u,\sigma_0 \in \mathbb{R}^+\):
@@ -674,8 +687,9 @@ L(\boldsymbol{x}) = L(\boldsymbol{y}, \boldsymbol{c}) = \phi^{N-n}(1-\phi)^n \le
 \] where \(n\) is the number of values in \(\boldsymbol{x}\) that are at
 most \(v\).
 
+\hypertarget{bayesian-inferenece-for-the-pl-igp-model}{%
 \paragraph{Bayesian Inferenece for the PL-IGP
-model}\label{bayesian-inferenece-for-the-pl-igp-model}
+model}\label{bayesian-inferenece-for-the-pl-igp-model}}
 
 Proceeding with the Bayesian approach, we decide on the following priors
 for the parameters:
@@ -701,7 +715,8 @@ With all of this we find the posterior distribution to be:
 As before, the results of fitting this model to several data sets are
 found in Section~\ref{sec-wsf}.
 
-\subsection{Work So Far}\label{sec-wsf}
+\hypertarget{sec-wsf}{%
+\subsection{Work So Far}\label{sec-wsf}}
 
 So far, we have started looking for a model that is adequate for
 modelling the degree distributions of real networks. We have used some
@@ -711,7 +726,8 @@ in \emph{Handbook of Markov Chain Monte Carlo} (2011) and Xiang and Neal
 parameters. Below we show the results of this for the same data sets
 shown in Figure~\ref{fig-survs}.
 
-\subsubsection{The Power Law}\label{the-power-law}
+\hypertarget{the-power-law}{%
+\subsubsection{The Power Law}\label{the-power-law}}
 
 In Figure~\ref{fig-pl} below we can see that for some sets of data the
 power law does an okay job for the bulk of the data, but it doesn't fit
@@ -725,18 +741,17 @@ iterations with a burn in period of 500 iterations and then thinned by
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{proposal_files/figure-pdf/fig-pl-1.pdf}
+{\centering \includegraphics{proposal_files/figure-pdf/fig-pl-1.pdf}
 
 }
 
 \caption{\label{fig-pl}Plots of fitted survival functions and posterior
 densities of \(\alpha\)}
 
-\end{figure}%
+\end{figure}
 
-\subsubsection{Power Law IGP Model}\label{power-law-igp-model}
+\hypertarget{power-law-igp-model}{%
+\subsubsection{Power Law IGP Model}\label{power-law-igp-model}}
 
 This mixture model defined in Section~\ref{sec-pli} seems to perform
 significantly better for all of the data sets. Within each group of
@@ -747,74 +762,19 @@ these sets of data well, it may be needlessly complex and have more
 parameters than necessary. So, next we fit the model described in
 Section~\ref{sec-plpl}.
 
-\begin{figure}
+\begin{figure}[H]
 
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-pli-1.pdf}
+{\centering \includegraphics{proposal_files/figure-pdf/fig-pli-1.pdf}
 
 }
-
-\subcaption{\label{fig-pli-1}}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-pli-2.pdf}
-
-}
-
-\subcaption{\label{fig-pli-2}}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-pli-3.pdf}
-
-}
-
-\subcaption{\label{fig-pli-3}}
-
-\end{minipage}%
-\newline
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-pli-4.pdf}
-
-}
-
-\subcaption{\label{fig-pli-4}}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-pli-5.pdf}
-
-}
-
-\subcaption{\label{fig-pli-5}}
-
-\end{minipage}%
 
 \caption{\label{fig-pli}Plots of fitted survival functions and posterior
 densities for the parameters}
 
-\end{figure}%
+\end{figure}
 
-\subsubsection{Power Law Mixture}\label{power-law-mixture}
+\hypertarget{power-law-mixture}{%
+\subsubsection{Power Law Mixture}\label{power-law-mixture}}
 
 Looking at Figure~\ref{fig-plpl}, this model also seems to perform quite
 well for all of the sets of data. In the top left of each group of plots
@@ -829,74 +789,19 @@ which was expected. This also happens to be the minimum value that the
 code will allow the threshold to take since model selection has not been
 implemented.
 
-\begin{figure}
+\begin{figure}[H]
 
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-plpl-1.pdf}
+{\centering \includegraphics{proposal_files/figure-pdf/fig-plpl-1.pdf}
 
 }
-
-\subcaption{\label{fig-plpl-1}}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-plpl-2.pdf}
-
-}
-
-\subcaption{\label{fig-plpl-2}}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-plpl-3.pdf}
-
-}
-
-\subcaption{\label{fig-plpl-3}}
-
-\end{minipage}%
-\newline
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-plpl-4.pdf}
-
-}
-
-\subcaption{\label{fig-plpl-4}}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-\centering{
-
-\captionsetup{labelsep=none}\includegraphics{proposal_files/figure-pdf/fig-plpl-5.pdf}
-
-}
-
-\subcaption{\label{fig-plpl-5}}
-
-\end{minipage}%
 
 \caption{\label{fig-plpl}Fitted survival functions and posterior
 densities of parameters}
 
-\end{figure}%
+\end{figure}
 
-\subsubsection{Summary}\label{summary}
+\hypertarget{summary}{%
+\subsubsection{Summary}\label{summary}}
 
 So far we have shown that the power law is only adequate for certain
 sets of data, like the BA model and CRAN data, and seems to not be
@@ -921,10 +826,12 @@ for the data sets.
 
 \newpage{}
 
-\section{Project Plan}\label{project-plan}
+\hypertarget{project-plan}{%
+\section{Project Plan}\label{project-plan}}
 
+\hypertarget{review-proofs-of-properties-of-the-barabuxe1si-albert-model}{%
 \subsubsection*{Review proofs of properties of the Barabási-Albert
-model}\label{review-proofs-of-properties-of-the-barabuxe1si-albert-model}
+model}\label{review-proofs-of-properties-of-the-barabuxe1si-albert-model}}
 \addcontentsline{toc}{subsubsection}{Review proofs of properties of the
 Barabási-Albert model}
 
@@ -933,8 +840,9 @@ properties of the BA model, with some attempt to recreate the proofs
 perhaps in a more mathematically rigorous fashion. This may also help in
 future when it comes to deriving the properties of the new model.
 
+\hypertarget{read-required-extreme-value-theory-and-network-science-materials}{%
 \subsubsection*{Read required extreme value theory and network science
-materials}\label{read-required-extreme-value-theory-and-network-science-materials}
+materials}\label{read-required-extreme-value-theory-and-network-science-materials}}
 \addcontentsline{toc}{subsubsection}{Read required extreme value theory
 and network science materials}
 
@@ -944,16 +852,18 @@ addition to some extreme value theory that will be needed when it comes
 to properly defining the model we choose for degree distributions and
 its properties.
 
+\hypertarget{review-previous-modifications-of-the-barabuxe1si-albert-model}{%
 \subsubsection*{Review previous modifications of the Barabási-Albert
-model}\label{review-previous-modifications-of-the-barabuxe1si-albert-model}
+model}\label{review-previous-modifications-of-the-barabuxe1si-albert-model}}
 \addcontentsline{toc}{subsubsection}{Review previous modifications of
 the Barabási-Albert model}
 
 Before we can attempt to make any modifications to the BA model, we will
 need to review what extensions/modifications have already been done.
 
+\hypertarget{come-up-with-a-suitable-model-for-the-degree-distribution}{%
 \subsubsection*{Come up with a suitable model for the degree
-distribution}\label{come-up-with-a-suitable-model-for-the-degree-distribution}
+distribution}\label{come-up-with-a-suitable-model-for-the-degree-distribution}}
 \addcontentsline{toc}{subsubsection}{Come up with a suitable model for
 the degree distribution}
 
@@ -961,8 +871,9 @@ Building on the previous steps, this is where we will choose a model to
 use for the degree distribution so that we can begin making appropriate
 modifications to the BA model in the next steps.
 
+\hypertarget{create-set-of-functions-andor-r-package-to-fit-the-model}{%
 \subsubsection*{Create set of functions and/or R package to fit the
-model}\label{create-set-of-functions-andor-r-package-to-fit-the-model}
+model}\label{create-set-of-functions-andor-r-package-to-fit-the-model}}
 \addcontentsline{toc}{subsubsection}{Create set of functions and/or R
 package to fit the model}
 
@@ -970,8 +881,9 @@ After coming up with a suitable model, we will require a way to fit it
 in a somewhat uninvolved process so that the model can be fit to many
 sets of data over many time frames.
 
+\hypertarget{monitor-changes-in-model-parameters-for-various-real-networks}{%
 \subsubsection*{Monitor changes in model parameters for various real
-networks}\label{monitor-changes-in-model-parameters-for-various-real-networks}
+networks}\label{monitor-changes-in-model-parameters-for-various-real-networks}}
 \addcontentsline{toc}{subsubsection}{Monitor changes in model parameters
 for various real networks}
 
@@ -979,8 +891,9 @@ This will be an ongoing process throughout some of the other steps, all
 while using the results produced to inform how we carry out the other
 steps.
 
+\hypertarget{use-these-changes-to-inform-modification-of-the-ba-model}{%
 \subsubsection*{Use these changes to inform modification of the BA
-model}\label{use-these-changes-to-inform-modification-of-the-ba-model}
+model}\label{use-these-changes-to-inform-modification-of-the-ba-model}}
 \addcontentsline{toc}{subsubsection}{Use these changes to inform
 modification of the BA model}
 
@@ -989,8 +902,9 @@ will produce a degree distribution that aligns with the chosen model and
 hopefully with the changes in the model parameters over time as the
 networks grow.
 
+\hypertarget{investigate-properties-of-the-new-model}{%
 \subsubsection*{Investigate properties of the new
-model}\label{investigate-properties-of-the-new-model}
+model}\label{investigate-properties-of-the-new-model}}
 \addcontentsline{toc}{subsubsection}{Investigate properties of the new
 model}
 
@@ -999,43 +913,44 @@ theoretical properties of networks that grow under the new model.
 
 \newpage{}
 
-\section*{References}\label{references}
+\hypertarget{references}{%
+\section*{References}\label{references}}
 \addcontentsline{toc}{section}{References}
 
-\phantomsection\label{refs}
+\hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
-\bibitem[\citeproctext]{ref-Barabasi99}
+\leavevmode\vadjust pre{\hypertarget{ref-Barabasi99}{}}%
 Barabási, Albert-László, and Réka Albert. 1999. {``Emergence of Scaling
 in Random Networks.''} \emph{Science} 286 (5439): 509--12.
 \url{https://doi.org/10.1126/science.286.5439.509}.
 
-\bibitem[\citeproctext]{ref-Broido_2019}
+\leavevmode\vadjust pre{\hypertarget{ref-Broido_2019}{}}%
 Broido, Anna D., and Aaron Clauset. 2019. {``Scale-Free Networks Are
 Rare.''} \emph{Nature Communications} 10 (1).
 \url{https://doi.org/10.1038/s41467-019-08746-5}.
 
-\bibitem[\citeproctext]{ref-Gilbert59}
+\leavevmode\vadjust pre{\hypertarget{ref-Gilbert59}{}}%
 Gilbert, E. N. 1959. {``{Random Graphs}.''} \emph{The Annals of
 Mathematical Statistics} 30 (4): 1141--44.
 \url{https://doi.org/10.1214/aoms/1177706098}.
 
-\bibitem[\citeproctext]{ref-2011HoMC}
+\leavevmode\vadjust pre{\hypertarget{ref-2011HoMC}{}}%
 \emph{Handbook of Markov Chain Monte Carlo}. 2011. Chapman \& Hall/CRC
 Handbooks of Modern Statistical Methods.
 
-\bibitem[\citeproctext]{ref-Rohrbeck_2018}
+\leavevmode\vadjust pre{\hypertarget{ref-Rohrbeck_2018}{}}%
 Rohrbeck, Christian, Emma F. Eastoe, Arnoldo Frigessi, and Jonathan A.
 Tawn. 2018. {``{Extreme value modelling of water-related insurance
 claims}.''} \emph{The Annals of Applied Statistics} 12 (1): 246--82.
 \url{https://doi.org/10.1214/17-AOAS1081}.
 
-\bibitem[\citeproctext]{ref-Voitalov_2019}
+\leavevmode\vadjust pre{\hypertarget{ref-Voitalov_2019}{}}%
 Voitalov, Ivan, Pim van der Hoorn, Remco Hofstad, and Dmitri Krioukov.
 2019. {``Scale-Free Networks Well Done.''} \emph{Physical Review
 Research} 1 (October).
 \url{https://doi.org/10.1103/PhysRevResearch.1.033034}.
 
-\bibitem[\citeproctext]{ref-XIANG2014240}
+\leavevmode\vadjust pre{\hypertarget{ref-XIANG2014240}{}}%
 Xiang, Fei, and Peter Neal. 2014. {``Efficient MCMC for Temporal
 Epidemics via Parameter Reduction.''} \emph{Computational Statistics \&
 Data Analysis} 80: 240--50.

@@ -171,7 +171,7 @@ cov.prop = function(data, prob = 1){
   }
 }
 
-pli.mcmc = function(n.iter, x, init, prior.params, init.cov, type=1, burn.in=0, cov.period=1e4, fix.u = NULL, backup_period = 200, show=F){
+pli.mcmc = function(n.iter, x, init, prior.params, init.cov, type=1, burn.in=0, cov.period=1e4, fix.u = NULL, backup_period = 1e7, show=F, logging=T, log_id = NULL){
   alpha.acc = data.frame(alpha=init$alpha)
   shapescale.acc = data.frame(shape=init$shape, scale=init$scale)
   thresh.acc = data.frame(threshold=init$threshold)
@@ -190,12 +190,19 @@ pli.mcmc = function(n.iter, x, init, prior.params, init.cov, type=1, burn.in=0, 
     axis(side=1)
     axis(side=2)
   }
-  
+  if(logging){
+    if(is.null(log_id)){
+      log_id = as.character(signif(abs(post.vals[1]),min(log10(abs(post.vals[1])),5)))
+    }
+    writeLines(c(""), paste0('logs/log-',log_id,'.txt'))
+  }
   
   x.max = max(x[,1])
   for(i in 1:n.iter+1){
-    if(show){
-      message('iteration: ',i)
+    if(logging){
+      cat('Iteration: ', i, "\n", file=paste0('logs/log-',log_id,'.txt'))
+    }else{
+      message('Iteration: ', i)
     }
     # 
     #alpha steps
@@ -249,7 +256,7 @@ pli.mcmc = function(n.iter, x, init, prior.params, init.cov, type=1, burn.in=0, 
     if(i%%backup_period==0){
       mcmc.out.temp <<- list(alpha=alpha.acc, shapescale=shapescale.acc, thresh=thresh.acc, post.vals = post.vals, states = states)
     }
-    if(i>1 & show){
+    if(i>1 && show){
       dev.flush()
       plot(max(1,i-499):i,tail(states$thresh[1:i],500), type='l', 
            main = paste(round(tail(states[1:i,],1),3),sep=','))
@@ -261,7 +268,7 @@ pli.mcmc = function(n.iter, x, init, prior.params, init.cov, type=1, burn.in=0, 
 
 
 # -------------------------------------------------------------------------
-plot.pli.mcmc = function(X,mcmc.out.states, burn.in=0, thin.by = 0, top='', show=F){
+plot.pli.mcmc = function(X,mcmc.out.states, burn.in=0, thin.by = 0, top='', show=F, by=1){
   Y=X
   Y[,2] = cumsum(X[,2])
   Y[,2] = Y[,2]/max(Y[,2])
@@ -269,34 +276,34 @@ plot.pli.mcmc = function(X,mcmc.out.states, burn.in=0, thin.by = 0, top='', show
   N = length(mcmc.out.states$alpha)
   mcmc.out.states = tail(mcmc.out.states, N-burn.in)[seq(1,N-burn.in, by=thin.by+1),]
   mcmc.out.states$phi = sapply(mcmc.out.states$threshold, FUN=function(x){return(sum(X[X[,1]>x,2])/sum(X[,2]))})
-  k = unique(X[,1])
+  k = seq(1,max(X[,1])+by, by=by)
   
   pmf.df = matrix(nrow=length(mcmc.out.states$shape), ncol=length(k))
   surv.df = matrix(nrow=length(mcmc.out.states$shape), ncol=length(k))
   for(i in 1:nrow(surv.df)){
     if(show){
-      print(i)
+      message(i,'/',nrow(surv.df))
     }
     
     surv.df[i,] = ppli(k,mcmc.out.states$phi[i], mcmc.out.states$alpha[i], 
                        mcmc.out.states$shape[i], mcmc.out.states$scale[i], mcmc.out.states$threshold[i], lower.tail=F)
-    pmf.df[i,] = dpli(k,mcmc.out.states$phi[i], mcmc.out.states$alpha[i], 
-                      mcmc.out.states$shape[i], mcmc.out.states$scale[i], mcmc.out.states$threshold[i])
+    # pmf.df[i,] = dpli(k,mcmc.out.states$phi[i], mcmc.out.states$alpha[i], 
+    #                   mcmc.out.states$shape[i], mcmc.out.states$scale[i], mcmc.out.states$threshold[i])
   }
   
   surv.upper95 = apply(surv.df, 2, quantile, probs = 0.975, na.rm=T)
   surv.lower95 = apply(surv.df, 2, quantile, probs = 1-0.975, na.rm=T)
-  
-  pmf.upper95 = apply(pmf.df, 2, quantile, probs = 0.975, na.rm=T)
-  pmf.lower95 = apply(pmf.df, 2, quantile, probs = 1-0.975, na.rm=T)
+  surv.mean = apply(surv.df, 2, mean, na.rm=T)
+  # pmf.upper95 = apply(pmf.df, 2, quantile, probs = 0.975, na.rm=T)
+  # pmf.lower95 = apply(pmf.df, 2, quantile, probs = 1-0.975, na.rm=T)
   
   #plots
   p1 = ggplot(data=mcmc.out.states) + geom_density(aes(x=alpha), linewidth=0.1)+theme(text = element_text(size=5))
   p2 = ggplot(data=mcmc.out.states, aes(x=shape, y=scale)) + geom_density_2d(linewidth=0.1)+theme(text = element_text(size=5))
-  p3 = ggplot(data=mcmc.out.states) + geom_density(aes(x=threshold),linewidth=0.1)+theme(text = element_text(size=5))
-  p4=ggplot(data=Y) + geom_line(aes(x=x, y=1-Freq),linewidth=0.1)+geom_ribbon(aes(x=x,ymin=surv.lower95, ymax=surv.upper95), alpha=0.3) +
+  p3 = ggplot(data = mcmc.out.states) + geom_histogram(aes(x = ceiling(threshold)))+theme(text = element_text(size=5))
+  p4=ggplot() + geom_line(data=Y,aes(x=x, y=1-Freq),linewidth=0.1)+geom_ribbon(aes(x=k,ymin=surv.lower95, ymax=surv.upper95), alpha=0.3) + geom_line(aes(x=k, y=surv.mean),colour='red')+
     scale_x_log10() +scale_y_log10()+ylab('Surv')+theme(text = element_text(size=5))
-  p5 = ggplot(data=X/sum(X[,2])) +geom_point(aes(x=x, y=Freq))+geom_ribbon(aes(x=x,ymin=pmf.lower95, ymax=pmf.upper95), alpha=0.3)+   scale_x_log10() +scale_y_log10()+theme(text = element_text(size=5))
+  # p5 = ggplot(data=X/sum(X[,2])) +geom_point(aes(x=x, y=Freq))+geom_ribbon(aes(x=x,ymin=pmf.lower95, ymax=pmf.upper95), alpha=0.3)+   scale_x_log10() +scale_y_log10()+theme(text = element_text(size=5))
   plot.list = list(p1,p2,p3,p4)
   return(arrangeGrob(p1,p2,p3,p4, nrow = 2, ncol=2,top=top))
 }
@@ -336,16 +343,16 @@ pl.posterior = function(X,alpha, prior.param){
 }
 
 pl.mcmc = function(n.iter,X, init, prior.param,prop.var.init = 0.1, S=1e3, show=F){
-  if(show){
-    dev.new()
-  }
   alpha.acc = c(init)
   states = numeric(n.iter+1)
   states[1] = init
   prop.var = prop.var.init
   var.vec = numeric(S)
   for(i in 1:n.iter+1){
-    # print(i-1)
+    if(show){
+      message(i-1)
+    }
+    
     var.vec[i] = prop.var
     alpha.prop = rnorm(1, tail(alpha.acc, 1), prop.var)
     if(alpha.prop>0){
@@ -434,16 +441,21 @@ plpl.joint.posterior = function(X,alpha,beta,u,prior.params){
   return(llplpl(X,alpha,beta,u) + plpl.joint.prior(alpha, beta, phi, prior.params))
 }
 
-plpl.mcmc = function(n.iter, X, init, prior.params, cov.init, S=1e3, H=1e3){
+plpl.mcmc = function(n.iter, X, init, prior.params, cov.init, S=1e3, H=1e3, log_id=NULL){
   threshold.cov = cov.init$threshold
   ab.cov = cov.init$ab
   states = data.frame(alpha=numeric(n.iter),beta = numeric(n.iter), threshold=numeric(n.iter), phi = numeric(n.iter))
   ab.acc = data.frame(init$alpha,init$beta)
   threshold.acc = c(init$threshold)
-  
+  if(!is.null(log_id)){
+    writeLines(c(""), paste0('logs/log-',log_id,'.txt'))
+  }
   for(i in 1:n.iter){
     #threshold steps
     # print(i)
+    if(!is.null(log_id)){
+      cat('Iteration: ', i, "\n", file=paste0('logs/log-',log_id,'.txt'))
+    }
     threshold.prop = rnorm(1,tail(threshold.acc,1),sqrt(threshold.cov))
     if(threshold.prop>0){
       logA = min(0, plpl.joint.posterior(X, tail(ab.acc,1)[1][[1]], tail(ab.acc, 1)[2][[1]], threshold.prop, prior.params))-
@@ -477,13 +489,15 @@ plpl.mcmc = function(n.iter, X, init, prior.params, cov.init, S=1e3, H=1e3){
   return(states)
 }
 
-plot.plpl.mcmc = function(X,mcmc.out.states, burn.in=0, thin.by=0,top=''){
+plot.plpl.mcmc = function(X,mcmc.out.states, burn.in=0, thin.by=0,top='', show=F){
   mcmc.out.states = mcmc.out.states[seq(burn.in, nrow(mcmc.out.states), by=thin.by+1),]
   k = unique(X[,1])
   surv.df = data.frame(matrix(ncol=length(k), nrow=nrow(mcmc.out.states)))
   
   for(i in 1:nrow(surv.df)){
-    # print(i)
+    if(show){
+      message(i,'/',nrow(surv.df))
+    }
     surv.df[i,] = pplpl(k, mcmc.out.states$alpha[i], mcmc.out.states$beta[i],ceiling(mcmc.out.states$threshold[i]),mcmc.out.states$phi[i], lower.tail=F)
   }
   
