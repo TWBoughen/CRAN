@@ -262,8 +262,7 @@ f(x) =
 \end{cases}
 $$ For $\phi\in(0,1)$, $\sigma_0 \in \mathbb{R}^+$, $\alpha\in\mathbb{R}$, $\xi \in (-\sigma_0/v, \infty)$[^2], and $v=\lceil u \rceil$ for $u \in \mathbb{R}^+$.
 
-[^2]: Again $\alpha$ has an extended domain due to the power law now being right truncated.
-To simplify the expressions that follow we define:
+[^2]: Again $\alpha$ has an extended domain due to the power law now being right truncated. To simplify the expressions that follow we define:
 
 $$
 G(x) = \left(1+\frac{\xi(x-v)}{\sigma_0 + \xi v}\right)_+^{-1/\xi}
@@ -308,7 +307,7 @@ As before, the results of fitting this model to several data sets are found in @
 
 ## Work So Far {#sec-wsf}
 
-So far, we have started looking for a model that is adequate for modelling the degree distributions of real networks. We have used some adaptive Metropolis-Hastings algorithms using methods similar to those in @2011HoMC and @XIANG2014240 to obtain estimates and credible intervals for the model parameters. Below we show the results of this for the same data sets shown in @fig-survs, alongside the fits to the data shown in @fig-surv-sim  which was simulated using the BA model.
+So far, we have started looking for a model that is adequate for modelling the degree distributions of real networks. We have used some adaptive Metropolis-Hastings algorithms using methods similar to those in @2011HoMC and @XIANG2014240 to obtain estimates and credible intervals for the model parameters. Below we show the results of this for the same data sets shown in @fig-survs, alongside the fits to the data shown in @fig-surv-sim which was simulated using the BA model.
 
 ### The Power Law
 
@@ -389,11 +388,12 @@ Upon further investigation and seeing how well these models fit to various sets 
 
 # Project Plan
 
-## Outcomes and more specific goals
+## Objectives and more specific goals
 
-### Review proofs of properties and modifications of the Barabási-Albert model (months 3-9) {.unnumbered} 
+### Review proofs of properties and modifications of the Barabási-Albert model (months 3-9) {.unnumbered}
 
-This will involve mostly reading of the original papers detailing the properties of the BA model, with some attempt to recreate the proofs perhaps in a more mathematically rigorous fashion. This may also help in future when it comes to deriving the properties of the new model. It will also be useful to identify what has already been done to modify or extend the BA model. Some of the papers already lined up to be read are:
+This will involve mostly reading of the original papers detailing the properties of the BA model, with some attempt to recreate the proofs perhaps in a more mathematically rigorous fashion. This may also help in future when it comes to deriving the properties of the new model. It will also be useful to identify what has already been done to modify or extend the BA model. Some of the papers already lined up to read are:
+
 -   @Dorogovtsev2000
 -   @BARABASI1999173
 -   @wang2022random
@@ -406,28 +406,37 @@ This will also involve mostly reading of materials that will help in understandi
 
 This will be an ongoing process throughout some of the other steps, all while using the results produced to inform how we carry out the other steps.
 
-### Use these changes to inform modification of the BA model (months 24-30){.unnumbered}
+### Use these changes to inform modification of the BA model (months 24-30) {.unnumbered}
 
 We will begin investigating possible modifications to the BA model that will produce a degree distribution that aligns with the chosen model and hopefully with the changes in the model parameters over time as the networks grow.
 
-### Investigate properties of the new model (months 30-36){.unnumbered}
+### Investigate properties of the new model (months 30-36) {.unnumbered}
 
 Once a set of modifications has been made, we will then study the theoretical properties of networks that grow under the new model.
 
 ## Outcomes
 
-### Develop a suitable model for the degree distribution (~ month 12){.unnumbered}
+### Develop a suitable model for the degree distribution (\~ month 12) {.unnumbered}
 
 We want a model that is capable of modelling the degree distributions of real networks, and the changes in them over time.
 
-### Create set of functions and/or R package to fit the model (~ month 18) {.unnumbered}
+### Create set of functions and/or R package to fit the model (\~ month 18) {.unnumbered}
 
 After coming up with a suitable model, we will require a way to fit it in a somewhat uninvolved process so that the model can be fit to many sets of data over many time frames.
 
-### Develop modifications of the BA model ( ~ month 30) {.unnumbered}
+### Develop modifications of the BA model ( \~ month 30) {.unnumbered}
 
 We want to develop some new model, based on the BA model, that can more accurately describe how real networks have grown.
 
-{{< pagebreak >}}
+
+# Training Needs
+
+As part of the project I will require some training, below is a list of some I intend to undergo:
+
+-   C++
+-   Using the HPC
+-   Communication, presentation and public speaking Skills
+-   Thesis writing
+
 
 # References {.unnumbered}
