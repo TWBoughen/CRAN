@@ -92,46 +92,48 @@ stopCluster(cl)
 
 
 tennis.pli = readRDS('mcmc.outputs/pli-tennis.rds')
-tennis.pli.plot = plot.pli.mcmc(tennis,tennis.pli$states,burn.in=1e4, thin.by=20, top='Tennis', show=T)
+tennis.pli.plot = plot.pli.mcmc(tennis,tennis.pli$states,burn.in=1e4, thin.by=20, top = grid::textGrob('Tennis', gp=grid::gpar(fontsize=24)), show=T)
 
 harvard.pli = readRDS('mcmc.outputs/pli-harvard.rds')
-harvard.pli.plot = plot.pli.mcmc(harvard,harvard.pli$states,burn.in=1e4, thin.by=20, top='Harvard', show=T)
+harvard.pli.plot = plot.pli.mcmc(harvard,harvard.pli$states,burn.in=1e4, thin.by=20, top = grid::textGrob('Harvard', gp=grid::gpar(fontsize=24)), show=T)
 
 protein.pli = readRDS('mcmc.outputs/pli-protein.rds')
-protein.pli.plot = plot.pli.mcmc(protein.dat,protein.pli$states,burn.in=1e4, thin.by=20, top='Protein', show=T)
+protein.pli.plot = plot.pli.mcmc(protein.dat,protein.pli$states,burn.in=1e4, thin.by=20, top = grid::textGrob('Protein', gp=grid::gpar(fontsize=24)), show=T)
 
 depends.pli = readRDS('mcmc.outputs/pli-depends.rds')
-depends.pli.plot = plot.pli.mcmc(depends,depends.pli$states,burn.in=1e4, thin.by=20, top='Depends', show=T)
+depends.pli.plot = plot.pli.mcmc(depends,depends.pli$states,burn.in=1e4, thin.by=20, top = grid::textGrob('CRAN', gp=grid::gpar(fontsize=24)), show=T)
 
 sim.pli = readRDS('mcmc.outputs/pli-sim.rds')
-sim.pli.plot = plot.pli.mcmc(sim,sim.pli$states,burn.in=1e4, thin.by=0, top='BA Simulated', show=T)
+sim.pli.plot = plot.pli.mcmc(sim,sim.pli$states,burn.in=1e4, thin.by=20, top = grid::textGrob('BA', gp=grid::gpar(fontsize=24)), show=T)
 
+
+ggsave(marrangeGrob(list(tennis.pli.plot,harvard.pli.plot,protein.pli.plot,depends.pli.plot,sim.pli.plot), nrow=2, ncol=3, top=''), file='pli-plot.png', width=18, height=6, device='png')
 
 saveRDS(marrangeGrob(list(tennis.pli.plot,harvard.pli.plot,protein.pli.plot,depends.pli.plot,sim.pli.plot), nrow=2, ncol=3, top=''), file='plotRDS/pli-plot.rds')
-
 
 
 # -------------------------------------------------------------------------
 
 
 tennis.plpl = readRDS('mcmc.outputs/plpl-tennis.rds')
-tennis.plpl.plot = plot.plpl.mcmc(tennis,tennis.plpl,burn.in=1e4, thin.by=20, top='Tennis', show=T)
+tennis.plpl.plot = plot.plpl.mcmc(tennis,tennis.plpl,burn.in=1e4, thin.by=20,  top = grid::textGrob('Tennis', gp=grid::gpar(fontsize=24)), show=T)
 
 harvard.plpl = readRDS('mcmc.outputs/plpl-harvard.rds')
-harvard.plpl.plot = plot.plpl.mcmc(harvard,harvard.plpl,burn.in=1e4, thin.by=20, top='Harvard', show=T)
+harvard.plpl.plot = plot.plpl.mcmc(harvard,harvard.plpl,burn.in=1e4, thin.by=20,  top = grid::textGrob('Harvard', gp=grid::gpar(fontsize=24)), show=T)
 
 protein.plpl = readRDS('mcmc.outputs/plpl-protein.rds')
-protein.plpl.plot = plot.plpl.mcmc(protein.dat,protein.plpl,burn.in=1e4, thin.by=20, top='Protein', show=T)
+protein.plpl.plot = plot.plpl.mcmc(protein.dat,protein.plpl,burn.in=1e4, thin.by=20,  top = grid::textGrob('Protein', gp=grid::gpar(fontsize=24)), show=T)
 
 depends.plpl = readRDS('mcmc.outputs/plpl-depends.rds')
-depends.plpl.plot = plot.plpl.mcmc(depends,depends.plpl,burn.in=1e4, thin.by=20, top='Depends', show=T)
+depends.plpl.plot = plot.plpl.mcmc(depends,depends.plpl,burn.in=1e4, thin.by=20,  top = grid::textGrob('CRAN', gp=grid::gpar(fontsize=24)), show=T)
 
 sim.plpl = readRDS('mcmc.outputs/plpl-sim.rds')
-sim.plpl.plot = plot.plpl.mcmc(sim,sim.plpl,burn.in=1e4, thin.by=20, top='BA Simulated', show=T)
+sim.plpl.plot = plot.plpl.mcmc(sim,sim.plpl,burn.in=1e4, thin.by=20, top = grid::textGrob('BA', gp=grid::gpar(fontsize=24)), show=T)
+
+ggsave(marrangeGrob(list(tennis.plpl.plot,harvard.plpl.plot,protein.plpl.plot,depends.plpl.plot,sim.plpl.plot), nrow=2, ncol=3, top=''), file='plpl-plot.png', device='png', width=18, height=6)
+
 
 saveRDS(marrangeGrob(list(tennis.plpl.plot,harvard.plpl.plot,protein.plpl.plot,depends.plpl.plot,sim.plpl.plot), nrow=2, ncol=3, top=''), file='plotRDS/plpl-plot.rds')
-
-
 
 
 

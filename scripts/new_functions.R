@@ -298,11 +298,11 @@ plot.pli.mcmc = function(X,mcmc.out.states, burn.in=0, thin.by = 0, top='', show
   # pmf.lower95 = apply(pmf.df, 2, quantile, probs = 1-0.975, na.rm=T)
   
   #plots
-  p1 = ggplot(data=mcmc.out.states) + geom_density(aes(x=alpha), linewidth=0.1)+theme(text = element_text(size=5))
-  p2 = ggplot(data=mcmc.out.states, aes(x=shape, y=scale)) + geom_density_2d(linewidth=0.1)+theme(text = element_text(size=5))
-  p3 = ggplot(data = mcmc.out.states) + geom_histogram(aes(x = ceiling(threshold)))+theme(text = element_text(size=5))
+  p1 = ggplot(data=mcmc.out.states) + geom_density(aes(x=alpha), linewidth=0.1)+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
+  p2 = ggplot(data=mcmc.out.states, aes(x=shape, y=scale)) + geom_density_2d(linewidth=0.1)+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
+  p3 = ggplot(data = mcmc.out.states) + geom_histogram(aes(x = ceiling(threshold)))+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
   p4=ggplot() + geom_line(data=Y,aes(x=x, y=1-Freq),linewidth=0.1)+geom_ribbon(aes(x=k,ymin=surv.lower95, ymax=surv.upper95), alpha=0.3) + geom_line(aes(x=k, y=surv.mean),colour='red')+
-    scale_x_log10() +scale_y_log10()+ylab('Surv')+theme(text = element_text(size=5))
+    scale_x_log10() +scale_y_log10()+ylab('Surv')+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
   # p5 = ggplot(data=X/sum(X[,2])) +geom_point(aes(x=x, y=Freq))+geom_ribbon(aes(x=x,ymin=pmf.lower95, ymax=pmf.upper95), alpha=0.3)+   scale_x_log10() +scale_y_log10()+theme(text = element_text(size=5))
   plot.list = list(p1,p2,p3,p4)
   return(arrangeGrob(p1,p2,p3,p4, nrow = 2, ncol=2,top=top))
@@ -389,8 +389,8 @@ pl.mcmc.plot = function(X,mcmc.out.states, burn.in=1e3, thin.by=0, top=''){
   surv.mean = apply(surv.df,2,mean, na.rm=T)
   
   p1 = ggplot(data=Y) + geom_line(aes(x=x, y=1-Freq))+geom_ribbon(aes(x=x,ymin=surv.lower95, ymax=surv.upper95), alpha=0.3) + geom_line(aes(x=x, y=surv.mean),colour='red')+
-    scale_x_log10() +scale_y_log10()+ylab('Surv') +ggtitle('Survival Function')+theme(text = element_text(size=5))
-  p2 = ggplot() + geom_density(aes(x=mcmc.out.states)) +xlab(latex2exp::TeX('\\alpha')) + ggtitle(latex2exp::TeX('Posterior Density of \\alpha'))+theme(text = element_text(size=5))
+    scale_x_log10() +scale_y_log10()+ylab('Surv') +ggtitle('Survival Function')+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
+  p2 = ggplot() + geom_density(aes(x=mcmc.out.states)) +xlab(latex2exp::TeX('\\alpha')) + ggtitle(latex2exp::TeX('Posterior Density of \\alpha'))+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
   plot.list = list(p2,p1)
   return(arrangeGrob(p2,p1, nrow = 1, ncol=2,top=top))
 }
@@ -510,10 +510,10 @@ plot.plpl.mcmc = function(X,mcmc.out.states, burn.in=0, thin.by=0,top='', show=F
   
   
   p1 = ggplot(data=Y) + geom_line(aes(x=x, y=1-Freq),linewidth=0.1)+geom_ribbon(aes(x=x,ymin=surv.lower95, ymax=surv.upper95), alpha=0.3) + geom_line(aes(x=x, y=surv.mean),colour='red')+
-    scale_x_log10() +scale_y_log10()+ylab('Surv') +ggtitle('Survival Function')+theme(text = element_text(size=5))
+    scale_x_log10() +scale_y_log10()+ylab('Surv') +ggtitle('Survival Function')+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
   
-  p2 = ggplot(data=mcmc.out.states) + geom_density_2d(aes(x=alpha, y=beta),linewidth=0.1)+theme(text = element_text(size=5))
-  p3 = ggplot(data = mcmc.out.states) + geom_histogram(aes(x = ceiling(threshold)))+theme(text = element_text(size=5))
+  p2 = ggplot(data=mcmc.out.states) + geom_density_2d(aes(x=alpha, y=beta),linewidth=0.1)+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
+  p3 = ggplot(data = mcmc.out.states) + geom_histogram(aes(x = ceiling(threshold)))+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
   plot.list = list(p2,p3,p1)
   
   return(arrangeGrob(p2,p3,p1, nrow=2, ncol=2, top=top))

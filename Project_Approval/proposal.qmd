@@ -73,19 +73,23 @@ sim[,1] = as.numeric(as.character(sim[,1]))
 
 Networks often arise when representing complex systems and the relationships between the components within them. Take a social network such as X (formerly Twitter) as an example, new users can join at any time and "follow" other users so that they can keep up with their posts. This forms a directed network where each user corresponds to a node and there exists an edge going from one users node to another if the former "follows" the latter. The number of "followers" of any one user is therefore the in-degree of the corresponding node in the network, is a quantity of interest when it comes to analysing how the network and each node's in-degree may grow in the future. This is just one example of a network, others include:
 
+-   The Facebook friends of Harvard students and alumni
+
 -   Interactions between proteins in cells
 
 -   Game results between tennis players
 
 -   Dependencies of R packages
 
+The survival functions of the degrees of nodes in each of these networks are shown below in @fig-survs.
+
 ```{r, echo=F, warning=F, message=F, fig.hold=T, fig.asp=0.2, fig.width=50, out.width="90%"}
 #| label: fig-survs
-#| fig.cap: Survival function of the degrees
-tennis.surv= plot.surv(tennis) +ggtitle('ATP tennis matches 2021')+theme(text = element_text(size=35))
-harvard.surv = plot.surv(harvard) + ggtitle('Harvard Facebook')+theme(text = element_text(size=35))
-protein.surv = plot.surv(protein.dat) + ggtitle('Protein Interactions in Yeast')+theme(text = element_text(size=35))
-depends.surv = plot.surv(depends)+ggtitle('CRAN dependencies')+theme(text = element_text(size=35))
+#| fig.cap: Survival function of the degrees.
+tennis.surv= plot.surv(tennis) +ggtitle('Tennis')+theme(text = element_text(size=35))+theme(plot.title = element_text(hjust = 0.5))
+harvard.surv = plot.surv(harvard) + ggtitle('Harvard')+theme(text = element_text(size=35))+theme(plot.title = element_text(hjust = 0.5))
+protein.surv = plot.surv(protein.dat) + ggtitle('Protein')+theme(text = element_text(size=35))+theme(plot.title = element_text(hjust = 0.5))
+depends.surv = plot.surv(depends)+ggtitle('CRAN')+theme(text = element_text(size=35))+theme(plot.title = element_text(hjust = 0.5))
 
 plot.list = list(tennis.surv,
 harvard.surv,
@@ -115,7 +119,7 @@ This model generates a network with an approximate power law degree distribution
 
 ```{r, echo=FALSE, warning=FALSE, out.width="90%"}
 #| label: fig-surv-sim
-#| fig.cap: Survival function of the degrees
+#| fig.cap: Survival function of the degrees for data simulated under BA model.
 #| fig-asp: 0.7
 sim.surv = plot.surv(sim)
 marrangeGrob(list(sim.surv), nrow=1, ncol=1, top='')
@@ -174,7 +178,9 @@ f(x) = \begin{cases}
 (1-\phi)\frac{x^{-(\alpha+1)}}{\sum_{k=1}^v k^{-(\alpha+1)}}, &x=1,2,\ldots v\\
 \phi\frac{x^{-(\beta+1)}}{\zeta(\beta+1, v+1)}, &x=v+1,v+2,\ldots
 \end{cases}
-$$ where $v=\lceil u\rceil$ for some $u\in\mathbb{R}^+$, $\alpha\in\mathbb{R}$, $\beta\in\mathbb{R}^+$, $\phi\in(0,1)$ and $\zeta(\beta+1, v+1) = \sum_{k=v+1}^\infty k^{-(\beta+1)}$ is the Hurwitz Zeta function.
+$$ where $v=\lceil u\rceil$ for some $u\in\mathbb{R}^+$, $\alpha\in\mathbb{R}$, $\beta\in\mathbb{R}^+$, $\phi\in(0,1)$ and $\zeta(\beta+1, v+1) = \sum_{k=v+1}^\infty k^{-(\beta+1)}$ is the Hurwitz Zeta function[^1].
+
+[^1]: Note that $\alpha$ can now be any real number, since the model is right truncated and therefore the denominator of the probability mass function will converge for any real $\alpha$. $\beta$ is more restricted since the denominator of the corresponding probability mass function is an infinite sum and therefore does not converge for $\beta \le 0$
 
 The survival function is fairly simple to calculate:
 
@@ -210,9 +216,9 @@ We now continue to calculate the posterior distribution:
 ```
 We fit this model for the same sets of data as we did for the previous models and the results are show next in @sec-wsf.
 
-### Power Law IGP Mixture Model {#sec-pli}
+### Power Law IGP Mixture Model (PL-IGP) {#sec-pli}
 
-To define this model (PL-IGP) we will first need to look at a traditional way of modelling extreme values, more specifically approximating the conditional distribution of the largest values. This is often done using the Generalised Pareto distribution (GPD) is parameter by the scale parameter $\sigma\in \mathbb{R}^+$, the shape parameter $\xi \in \mathbb{R}$ ,and a threshold $u\in \mathbb{R}^+$. It is denoted by $Y|Y>u \sim GPD(\sigma,\xi)$ where $Y$ is some continuous random variable. The GPD has survival function defined below:
+To define this model we will first need to look at a traditional way of modelling extreme values, more specifically approximating the conditional distribution of the largest values. This is often done using the Generalised Pareto distribution (GPD) is parameter by the scale parameter $\sigma\in \mathbb{R}^+$, the shape parameter $\xi \in \mathbb{R}$ ,and a threshold $u\in \mathbb{R}^+$. It is denoted by $Y|Y>u \sim GPD(\sigma,\xi)$ where $Y$ is some continuous random variable. The GPD has survival function defined below:
 
 $$
 \Pr(Y>y|Y>u) = \left(1+\frac{\xi(y-u)}{\sigma}\right)_+^{-1/\xi}, \qquad y>u
@@ -226,7 +232,7 @@ We follow roughly the same method as @Rohrbeck_2018, but they only consider mode
 
 ##### Ceiling Version: the case where $Y=\lceil H \rceil$
 
-For values of $x = \lfloor u \rfloor , \lfloor u \rfloor +1, \ldots$ and $\xi\in\mathbb{R}$ and $u,\sigma\_0 \in \mathbb{R}^+$:
+For values of $x = \lfloor u \rfloor , \lfloor u \rfloor +1, \ldots$ and $\xi\in\mathbb{R}$ and $u,\sigma_0 \in \mathbb{R}^+$:
 
 ```{=tex}
 \begin{align*}
@@ -254,8 +260,9 @@ f(x) =
 (1-\phi)\frac{x^{-(\alpha+1)}}{\sum_{k=1}^v k^{-(\alpha+1)}},&x=1,2,\ldots,v\\
 \phi\left[\left(1+\frac{\xi(x+1-v)}{\sigma_0 + \xi v}\right)_+^{-1/\xi} - \left(1+\frac{\xi(x-v)}{\sigma_0 + \xi v}\right)_+^{-1/\xi}\right], &x=v+1, v+2, \ldots
 \end{cases}
-$$ For $\phi\in(0,1)$, $\sigma_0 \in \mathbb{R}^+$, $\alpha\in\mathbb{R}$, $\xi \in (-\sigma_0/v, \infty)$, and $v=\lceil u \rceil$ for $u \in \mathbb{R}^+$.
+$$ For $\phi\in(0,1)$, $\sigma_0 \in \mathbb{R}^+$, $\alpha\in\mathbb{R}$, $\xi \in (-\sigma_0/v, \infty)$[^2], and $v=\lceil u \rceil$ for $u \in \mathbb{R}^+$.
 
+[^2]: Again $\alpha$ has an extended domain due to the power law now being right truncated.
 To simplify the expressions that follow we define:
 
 $$
@@ -301,15 +308,15 @@ As before, the results of fitting this model to several data sets are found in @
 
 ## Work So Far {#sec-wsf}
 
-So far, we have started looking for a model that is adequate for modelling the degree distributions of real networks. We have used some adaptive Metropolis-Hastings algorithms using methods similar to those in @2011HoMC and @XIANG2014240 to obtain estimates and credible intervals for the model parameters. Below we show the results of this for the same data sets shown in @fig-survs.
+So far, we have started looking for a model that is adequate for modelling the degree distributions of real networks. We have used some adaptive Metropolis-Hastings algorithms using methods similar to those in @2011HoMC and @XIANG2014240 to obtain estimates and credible intervals for the model parameters. Below we show the results of this for the same data sets shown in @fig-survs, alongside the fits to the data shown in @fig-surv-sim  which was simulated using the BA model.
 
 ### The Power Law
 
-In @fig-pl below we can see that for some sets of data the power law does an okay job for the bulk of the data, but it doesn't fit well in the right tail usually lying above the empirical survival curve. For other sets of data, the model seems completely inadequate namely for the Tennis and Harvard data sets. These results were obtained using the prior parameter $\lambda_\alpha = 0.01$ and an initial value of $\alpha=1$ in an adaptive Metropolis-Hastings algorithm for 100,000 iterations with a burn in period of 500 iterations and then thinned by 5, yielding a minimum effective sample size of 2,000.
+In @fig-pl below we can see that for some sets of data the power law does an good job for the bulk of the data, but it doesn't fit well in the right tail usually lying above the empirical survival curve. For other sets of data, the model seems completely inadequate namely for the Tennis and Harvard data sets. These results were obtained using the prior parameter $\lambda_\alpha = 0.01$ and an initial value of $\alpha=1$ in an adaptive Metropolis-Hastings algorithm for 100,000 iterations with a burn in period of 500 iterations and then thinned by 5, yielding a minimum effective sample size of 2,000.
 
-```{r, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, fig.hold=TRUE, fig.width=10}
+```{r, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, fig.hold=TRUE, fig.width=20, fig.asp=0.67}
 #| label: fig-pl
-#| fig-cap: Plots of fitted survival functions and posterior densities of $\alpha$
+#| fig-cap: Plots of fitted survival functions and posterior densities of $\alpha$.
 #| fig-pos: 'H'
 
 set.seed(19031732)
@@ -323,11 +330,11 @@ if("sim.pl.plot" %in% ls()){
   depends.pl.mcmc = pl.mcmc(1e5, depends, 1, 0.01, S=1e4)
   sim.pl.mcmc = pl.mcmc(1e5, sim, 1, 0.01, S=1e4)
   
-  tennis.pl.plot = pl.mcmc.plot(tennis, tennis.pl.mcmc$acc, burn.in=500, thin.by=5, top='Tennis')
-  harvard.pl.plot = pl.mcmc.plot(harvard, harvard.pl.mcmc$acc, burn.in=500, thin.by=5, top='Harvard')
-  protein.pl.plot = pl.mcmc.plot(protein.dat, protein.pl.mcmc$acc, burn.in=500, thin.by=5, top='Protein')
-  depends.pl.plot = pl.mcmc.plot(depends, depends.pl.mcmc$acc, burn.in=500, thin.by=5, top='CRAN')
-  sim.pl.plot = pl.mcmc.plot(sim, sim.pl.mcmc$acc, burn.in=500, thin.by=5, top='BA')
+  tennis.pl.plot = pl.mcmc.plot(tennis, tennis.pl.mcmc$acc, burn.in=500, thin.by=5,top = grid::textGrob('Tennis', gp=grid::gpar(fontsize=24)))
+  harvard.pl.plot = pl.mcmc.plot(harvard, harvard.pl.mcmc$acc, burn.in=500, thin.by=5, top = grid::textGrob('Harvard', gp=grid::gpar(fontsize=24)))
+  protein.pl.plot = pl.mcmc.plot(protein.dat, protein.pl.mcmc$acc, burn.in=500, thin.by=5, top = grid::textGrob('Protein', gp=grid::gpar(fontsize=24)))
+  depends.pl.plot = pl.mcmc.plot(depends, depends.pl.mcmc$acc, burn.in=500, thin.by=5, top = grid::textGrob('CRAN', gp=grid::gpar(fontsize=24)))
+  sim.pl.plot = pl.mcmc.plot(sim, sim.pl.mcmc$acc, burn.in=500, thin.by=5, top = grid::textGrob('BA', gp=grid::gpar(fontsize=24)))
 }
 
 pl.plots = marrangeGrob(
@@ -353,7 +360,7 @@ This mixture model defined in @sec-pli seems to perform significantly better for
 
 ```{r, echo=FALSE, message=FALSE,fig.width=20, fig.asp=0.67}
 #| label: fig-pli
-#| fig-cap: Plots of fitted survival functions and posterior densities for the parameters
+#| fig-cap: Plots of fitted survival functions and posterior densities for the parameters.
 #| fig-pos: 'H'
 
 pli.plot = readRDS('plotRDS/pli-plot.rds')
@@ -362,11 +369,11 @@ pli.plot
 
 ### Power Law Mixture
 
-Looking at @fig-plpl, this model also seems to perform quite well for all of the sets of data. In the top left of each group of plots is a 2D density plot of the two different power law parameters, $\alpha$ and $\beta$. In the top right is a histogram of the value of $\lceil u\rceil$ and finally, in the bottom right is a plot of the empirical survival function with the posterior mean in red and 95% credible intervals for the survival. It is interesting to note that ,for the simulated data, the value of $\lceil u \rceil$ did not stray from the value of 3 indicating that using only one power law may be suitable which was expected. This also happens to be the minimum value that the code will allow the threshold to take since model selection has not been implemented.
+Looking at @fig-plpl, this model also seems to perform quite well for all of the sets of data. In the top left of each group of plots is a 2D density plot of the two different power law parameters, $\alpha$ and $\beta$. In the top right is a histogram of the value of $\lceil u\rceil$ and finally, in the bottom right is a plot of the empirical survival function with the posterior mean in red and 95% credible intervals for the survival. It is interesting to note that, for the simulated data, the value of $\lceil u \rceil$ did not stray from the value of 3 indicating that using only one power law may be suitable which was expected. This also happens to be the minimum value that the code will allow the threshold to take since model selection has not been implemented.
 
 ```{r, eval=TRUE, echo=FALSE,fig.width=20, fig.asp=0.67}
 #| label: fig-plpl
-#| fig-cap: Fitted survival functions and posterior densities of parameters
+#| fig-cap: Fitted survival functions and posterior densities of parameters.
 plpl.plot = readRDS('plotRDS/plpl-plot.rds')
 plpl.plot
 
@@ -382,38 +389,45 @@ Upon further investigation and seeing how well these models fit to various sets 
 
 # Project Plan
 
-### Review proofs of properties of the Barabási-Albert model {.unnumbered}
+## Outcomes and more specific goals
 
-This will involve mostly reading of the original papers detailing the properties of the BA model, with some attempt to recreate the proofs perhaps in a more mathematically rigorous fashion. This may also help in future when it comes to deriving the properties of the new model.
+### Review proofs of properties and modifications of the Barabási-Albert model (months 3-9) {.unnumbered} 
 
-### Read required extreme value theory and network science materials {.unnumbered}
+This will involve mostly reading of the original papers detailing the properties of the BA model, with some attempt to recreate the proofs perhaps in a more mathematically rigorous fashion. This may also help in future when it comes to deriving the properties of the new model. It will also be useful to identify what has already been done to modify or extend the BA model. Some of the papers already lined up to be read are:
+-   @Dorogovtsev2000
+-   @BARABASI1999173
+-   @wang2022random
+
+### Read extreme value theory and network science materials (months 6-12) {.unnumbered}
 
 This will also involve mostly reading of materials that will help in understanding the mathematics behind network generative models in addition to some extreme value theory that will be needed when it comes to properly defining the model we choose for degree distributions and its properties.
 
-### Review previous modifications of the Barabási-Albert model {.unnumbered}
-
-Before we can attempt to make any modifications to the BA model, we will need to review what extensions/modifications have already been done.
-
-### Come up with a suitable model for the degree distribution {.unnumbered}
-
-Building on the previous steps, this is where we will choose a model to use for the degree distribution so that we can begin making appropriate modifications to the BA model in the next steps.
-
-### Create set of functions and/or R package to fit the model {.unnumbered}
-
-After coming up with a suitable model, we will require a way to fit it in a somewhat uninvolved process so that the model can be fit to many sets of data over many time frames.
-
-### Monitor changes in model parameters for various real networks {.unnumbered}
+### Monitor changes in model parameters for various real networks (months 18-24) {.unnumbered}
 
 This will be an ongoing process throughout some of the other steps, all while using the results produced to inform how we carry out the other steps.
 
-### Use these changes to inform modification of the BA model {.unnumbered}
+### Use these changes to inform modification of the BA model (months 24-30){.unnumbered}
 
 We will begin investigating possible modifications to the BA model that will produce a degree distribution that aligns with the chosen model and hopefully with the changes in the model parameters over time as the networks grow.
 
-### Investigate properties of the new model {.unnumbered}
+### Investigate properties of the new model (months 30-36){.unnumbered}
 
 Once a set of modifications has been made, we will then study the theoretical properties of networks that grow under the new model.
 
-{{< pagebreak >}} 
+## Outcomes
+
+### Develop a suitable model for the degree distribution (~ month 12){.unnumbered}
+
+We want a model that is capable of modelling the degree distributions of real networks, and the changes in them over time.
+
+### Create set of functions and/or R package to fit the model (~ month 18) {.unnumbered}
+
+After coming up with a suitable model, we will require a way to fit it in a somewhat uninvolved process so that the model can be fit to many sets of data over many time frames.
+
+### Develop modifications of the BA model ( ~ month 30) {.unnumbered}
+
+We want to develop some new model, based on the BA model, that can more accurately describe how real networks have grown.
+
+{{< pagebreak >}}
 
 # References {.unnumbered}
