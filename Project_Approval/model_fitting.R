@@ -107,10 +107,10 @@ sim.pli = readRDS('mcmc.outputs/pli-sim.rds')
 sim.pli.plot = plot.pli.mcmc(sim,sim.pli$states,burn.in=1e4, thin.by=20, top = grid::textGrob('BA', gp=grid::gpar(fontsize=24)), show=T)
 
 
-ggsave(marrangeGrob(list(tennis.pli.plot,harvard.pli.plot,protein.pli.plot,depends.pli.plot,sim.pli.plot), nrow=2, ncol=3, top=''), file='pli-plot.png', width=18, height=6, device='png')
 
 saveRDS(marrangeGrob(list(tennis.pli.plot,harvard.pli.plot,protein.pli.plot,depends.pli.plot,sim.pli.plot), nrow=2, ncol=3, top=''), file='plotRDS/pli-plot.rds')
 
+ggsave(marrangeGrob(list(tennis.pli.plot,harvard.pli.plot,protein.pli.plot,depends.pli.plot,sim.pli.plot),layout_matrix = layout_mat, top=''), file='../poster3/pli-plot.svg', device='svg', width=26, height=11)
 
 # -------------------------------------------------------------------------
 
@@ -130,12 +130,64 @@ depends.plpl.plot = plot.plpl.mcmc(depends,depends.plpl,burn.in=1e4, thin.by=20,
 sim.plpl = readRDS('mcmc.outputs/plpl-sim.rds')
 sim.plpl.plot = plot.plpl.mcmc(sim,sim.plpl,burn.in=1e4, thin.by=20, top = grid::textGrob('BA', gp=grid::gpar(fontsize=24)), show=T)
 
-ggsave(marrangeGrob(list(tennis.plpl.plot,harvard.plpl.plot,protein.plpl.plot,depends.plpl.plot,sim.plpl.plot), nrow=2, ncol=3, top=''), file='plpl-plot.png', device='png', width=18, height=6)
+
+layout_mat = t(matrix(c(1,1,2,2,3,3,
+                        1,1,2,2,3,3,
+                        NA,4,4,5,5,NA,
+                        NA,4,4,5,5,NA),nrow=6,ncol=4))
+
+ggsave(marrangeGrob(list(tennis.plpl.plot,harvard.plpl.plot,protein.plpl.plot,depends.plpl.plot,sim.plpl.plot),layout_matrix = layout_mat, top=''), file='../poster3/plpl-plot.svg', device='svg', width=26, height=13)
 
 
-saveRDS(marrangeGrob(list(tennis.plpl.plot,harvard.plpl.plot,protein.plpl.plot,depends.plpl.plot,sim.plpl.plot), nrow=2, ncol=3, top=''), file='plotRDS/plpl-plot.rds')
+saveRDS(marrangeGrob(list(tennis.plpl.plot,harvard.plpl.plot,protein.plpl.plot,depends.plpl.plot,sim.plpl.plot),layout_matrix = layout_mat, top=''), file='plotRDS/plpl-plot.rds')
+
+# -------------------------------------------------------------------------
+
+tennis.surv= plot.surv(tennis) +ggtitle('Tennis')+theme(text = element_text(size=35))+theme(plot.title = element_text(hjust = 0.5))
+harvard.surv = plot.surv(harvard) + ggtitle('Harvard')+theme(text = element_text(size=35))+theme(plot.title = element_text(hjust = 0.5))
+protein.surv = plot.surv(protein.dat) + ggtitle('Protein')+theme(text = element_text(size=35))+theme(plot.title = element_text(hjust = 0.5))
+depends.surv = plot.surv(depends)+ggtitle('CRAN')+theme(text = element_text(size=35))+theme(plot.title = element_text(hjust = 0.5))
+
+plot.list = list(tennis.surv,
+                 harvard.surv,
+                 protein.surv,
+                 depends.surv)
+surv.plots = marrangeGrob(plot.list, nrow=2, ncol=2, top='')
+ggsave(file='../poster3/surplots.svg', surv.plots, device='svg', width=23, height=15)
 
 
+surv.plots
 
+# -------------------------------------------------------------------------
 
+sim.surv = plot.surv(sim)
+ggsave(file='../poster3/simsurv.svg', sim.surv, device='svg', width=4.5, height=2.5)
 
+# -------------------------------------------------------------------------
+tennis.pl.mcmc = pl.mcmc(1e5, tennis, 1, 0.01, S=1e4)
+harvard.pl.mcmc = pl.mcmc(1e5, harvard, 1, 0.01, S=1e4)
+protein.pl.mcmc = pl.mcmc(1e5, protein.dat, 1, 0.01, S=1e4)
+depends.pl.mcmc = pl.mcmc(1e5, depends, 1, 0.01, S=1e4)
+sim.pl.mcmc = pl.mcmc(1e5, sim, 1, 0.01, S=1e4)
+
+tennis.pl.plot = pl.mcmc.plot(tennis, tennis.pl.mcmc$acc, burn.in=500, thin.by=5,top = grid::textGrob('Tennis', gp=grid::gpar(fontsize=45)))
+harvard.pl.plot = pl.mcmc.plot(harvard, harvard.pl.mcmc$acc, burn.in=500, thin.by=5, top = grid::textGrob('Harvard', gp=grid::gpar(fontsize=45)))
+protein.pl.plot = pl.mcmc.plot(protein.dat, protein.pl.mcmc$acc, burn.in=500, thin.by=5, top = grid::textGrob('Protein', gp=grid::gpar(fontsize=45)))
+depends.pl.plot = pl.mcmc.plot(depends, depends.pl.mcmc$acc, burn.in=500, thin.by=5, top = grid::textGrob('CRAN', gp=grid::gpar(fontsize=45)))
+sim.pl.plot = pl.mcmc.plot(sim, sim.pl.mcmc$acc, burn.in=500, thin.by=5, top = grid::textGrob('BA', gp=grid::gpar(fontsize=45)))
+
+layout_mat = t(matrix(c(1,1,2,2,
+                        1,1,2,2,
+                        3,3,4,4,
+                        3,3,4,4,
+                        NA,5,5,NA,
+                        NA,5,5,NA), nrow=4, ncol=6))
+
+pl.plots = marrangeGrob(
+  list(
+    tennis.pl.plot,
+    harvard.pl.plot,
+    protein.pl.plot,
+    depends.pl.plot,
+    sim.pl.plot),layout_matrix = layout_mat, top='')
+ggsave(file='../poster3/plsurv.svg', pl.plots, device='svg', width=25, height=27)

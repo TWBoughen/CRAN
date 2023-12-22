@@ -299,7 +299,7 @@ plot.pli.mcmc = function(X,mcmc.out.states, burn.in=0, thin.by = 0, top='', show
   
   #plots
   p1 = ggplot(data=mcmc.out.states) + geom_density(aes(x=alpha), linewidth=0.1)+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
-  p2 = ggplot(data=mcmc.out.states, aes(x=shape, y=scale)) + geom_density_2d(linewidth=0.1)+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
+  p2 = ggplot(data=mcmc.out.states, aes(x=shape, y=scale)) + geom_density_2d(linewidth=0.2)+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
   p3 = ggplot(data = mcmc.out.states) + geom_histogram(aes(x = ceiling(threshold)))+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))
   p4=ggplot() + geom_line(data=Y,aes(x=x, y=1-Freq),linewidth=0.1)+geom_ribbon(aes(x=k,ymin=surv.lower95, ymax=surv.upper95), alpha=0.3) + geom_line(aes(x=k, y=surv.mean),colour='red')+
     scale_x_log10() +scale_y_log10()+ylab('Surv')+theme(text = element_text(size=20))+theme(plot.title = element_text(hjust = 0.5))

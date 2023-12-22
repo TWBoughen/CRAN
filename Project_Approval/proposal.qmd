@@ -428,7 +428,6 @@ After coming up with a suitable model, we will require a way to fit it in a some
 
 We want to develop some new model, based on the BA model, that can more accurately describe how real networks have grown.
 
-
 # Training Needs
 
 As part of the project I will require some training, below is a list of some I intend to undergo:
@@ -437,6 +436,5 @@ As part of the project I will require some training, below is a list of some I i
 -   Using the HPC
 -   Communication, presentation and public speaking Skills
 -   Thesis writing
-
 
 # References {.unnumbered}
